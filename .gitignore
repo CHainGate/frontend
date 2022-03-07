@@ -151,3 +151,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# generated api
+api/*
