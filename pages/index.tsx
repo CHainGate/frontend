@@ -89,7 +89,7 @@ const Home: NextPage = () => {
         ) : data ? (
           <>
             <h3>{data.name}</h3>
-            <img src={data.photoUrls[0]} alt={data.name} />
+            {data.photoUrls[0] && (<img src={data.photoUrls[0]} alt={data.name} />)}
           </>
         ) : null}
       </article>
