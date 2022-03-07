@@ -152,5 +152,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# Remove additional Intellij files
+.idea/runConfigurations.xml
+.idea/codeStyles/codeStyleConfig.xml
+
 # generated api
 api/*
