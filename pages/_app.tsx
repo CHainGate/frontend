@@ -1,8 +1,10 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 
-function MyApp({ Component, pageProps }: AppProps) {
+const { wrapper } = require("../lib/store");
+
+function App({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />
 }
 
-export default MyApp
+export default wrapper.withRedux(App);
