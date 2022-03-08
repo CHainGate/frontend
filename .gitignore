@@ -157,4 +157,4 @@ yarn-error.log*
 .idea/codeStyles/codeStyleConfig.xml
 
 # generated api
-api/*
+api/chaingate.generated.ts
