@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import Home from '@/pages/index'
 import HomeTest from "../pages/hometest";
-import {renderWithStore} from "../pages/render-with-store";
+import {renderWithStore} from "../lib/render-with-store";
 
 describe('Home', () => {
   it('renders a heading', async() => {
