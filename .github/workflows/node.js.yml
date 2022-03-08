@@ -28,5 +28,5 @@ jobs:
         cache: 'yarn'
     - run: yarn install --frozen-lockfile
     - run: yarn run generate-api
-    - run: yarn run build --if-present
+    - run: yarn run build
     - run: yarn test
