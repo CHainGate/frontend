@@ -3,6 +3,8 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { useRouter } from 'next/router';
 import { GetPetByIdApiArg, useGetPetByIdQuery } from '../api/chaingate.generated';
+import {Link} from "@mui/material";
+import * as React from "react";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -88,10 +90,13 @@ const Home: NextPage = () => {
         ) : data ? (
           <>
             <h3>{data.name}</h3>
-            {data.photoUrls[0] && (<Image src={data.photoUrls[0]} alt={data.name} />)}
+            {data.photoUrls[0] && (<Image src={data.photoUrls[0]} alt={data.name} layout="fill" />)}
           </>
         ) : null}
       </article>
+    <Link href="/muiHome" color="secondary">
+        Go to the about page
+    </Link>
     </div>
   )
 }
