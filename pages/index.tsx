@@ -79,11 +79,11 @@ const Home: NextPage = () => {
         <button onClick={user}>user</button>
         <button onClick={logout}>logout</button>
       </div>
-      test
+        <h2>test</h2>
       <article>
         {error ? (
           <>Oh no, there was an error</>
-        ) : router.isFallback || isLoading ? (
+        ) : router && router.isFallback || isLoading ? (
           <>Loading...</>
         ) : data ? (
           <>

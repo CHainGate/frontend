@@ -2,11 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import { createWrapper } from "next-redux-wrapper";
 import { chaingateApi } from "./baseApi";
 
-export const makeStore = () =>
+export const makeStore: any = (state: Partial<RootState> = {}) =>
   configureStore({
     reducer: {
-      [chaingateApi.reducerPath]: chaingateApi.reducer,
+        [chaingateApi.reducerPath]: chaingateApi.reducer,
     },
+    preloadedState: state,
     middleware: (gDM) => gDM().concat(chaingateApi.middleware),
   });
 
