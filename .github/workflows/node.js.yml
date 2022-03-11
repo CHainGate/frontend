@@ -31,3 +31,5 @@ jobs:
     - run: yarn run generate-api
     - run: yarn run build
     - run: yarn test:ci
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
