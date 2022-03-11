@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [16.x, 17.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
       fail-fast: false
 
@@ -30,4 +30,4 @@ jobs:
     - run: yarn install --frozen-lockfile
     - run: yarn run generate-api
     - run: yarn run build
-    - run: yarn test
+    - run: yarn test:ci
