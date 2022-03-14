@@ -6,6 +6,9 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import {ThemeProvider} from "@mui/material/styles";
 import theme from "../src/theme";
 import {CssBaseline} from "@mui/material";
+import Sidebar from "../src/Sidebar";
+import * as React from "react";
+import {useAppSelector} from "../lib/hooks";
 
 
 const { wrapper } = require("../lib/store");
@@ -15,6 +18,14 @@ const clientSideEmotionCache = createEmotionCache();
 
 function App(props : any) {
     const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+    const authInfo = useAppSelector((state) => state.authInfo);
+
+    let comp;
+    if (authInfo.isAuthenticated) {
+        comp = <Sidebar />;
+    } else {
+        comp = <></>;
+    }
 
     return (
         <CacheProvider value={emotionCache}>
@@ -24,6 +35,7 @@ function App(props : any) {
             <ThemeProvider theme={theme}>
                 {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
                 <CssBaseline />
+                {comp}
                 <Component {...pageProps} />
             </ThemeProvider>
         </CacheProvider>
