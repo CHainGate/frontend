@@ -139,7 +139,7 @@ export default function Sidebar() {
     const drawer = (
         <div>
             <div className="logo-container">
-                <Image layout='fill' src={logo} alt="Logo exRap" className="logo" />
+                <Image height={142} width={230} src={logo} alt="Logo exRap" className="logo" />
             </div>
             <Divider />
             <List className={classes.userItem}>

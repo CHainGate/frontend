@@ -73,8 +73,8 @@ const Login: NextPage = () => {
                     alignItems="center"
                 >
 
-                    <Box className="login-form-logo-container" my={2}>
-                        <Image layout='fill' src={logo} alt="Logo exRap" className="logo" />
+                    <Box className="login-form-logo-container">
+                        <Image height={142} width={230} src={logo} alt="Logo exRap" className="logo" />
                     </Box>
                     <Box my={2}>
                         {content}

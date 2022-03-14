@@ -59,7 +59,7 @@ const Configuration: NextPage = () => {
                 >
 
                     <Box className="login-form-logo-container" my={2}>
-                        <Image layout='fill' src={logo} alt="Logo exRap" className="logo" />
+                        <Image height={142} width={230} src={logo} alt="Logo exRap" className="logo" />
                     </Box>
                     <Box my={2}>
                         {content}
