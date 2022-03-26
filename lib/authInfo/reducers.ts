@@ -31,13 +31,14 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setCredentials: (state, { payload: { username, token } }: PayloadAction<AuthInfo>) => {
+            // TODO JWT token has only iss and exp currently
             const decodedToken: JWTTokenData = jwt_decode(token);
             state.username = username;
             state.userid = parseInt(decodedToken.nameid, 10);
             state.token = token;
             state.roles = decodedToken.role;
             state.isAuthenticated = true;
-            sessionStorage.setItem('token', token);
+            localStorage.setItem('token', token);
         },
         clearUser: () => {
             sessionStorage.clear();

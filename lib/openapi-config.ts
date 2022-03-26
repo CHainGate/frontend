@@ -1,7 +1,7 @@
 import { ConfigFile } from '@rtk-query/codegen-openapi';
 
 const config: ConfigFile = {
-  schemaFile: 'https://api.swaggerhub.com/apis/a-lesi/open-api_config_service/1.0.0',
+  schemaFile: 'https://raw.githubusercontent.com/CHainGate/backend/main/swaggerui/config/openapi.yaml',
   apiFile: './baseApi.ts',
   apiImport: 'chaingateApi',
   outputFile: '../api/chaingate.generated.ts',
