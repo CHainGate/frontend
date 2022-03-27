@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import {Alert, Button, CircularProgress, Grid, Paper, TextField} from "@mui/material";
-import {Login, LoginApiArg, useLoginMutation} from '../api/chaingate.generated';
+import { LoginRequestDto, LoginApiArg, useLoginMutation} from '../api/chaingate.generated';
 import {useState} from "react";
 import logo from '../public/CHainGate_inverted.svg';
 import Image from 'next/image'
@@ -20,11 +20,11 @@ const Home: NextPage = () => {
 
     const handleChange = ({
           target: { name, value },
-      }: React.ChangeEvent<HTMLInputElement>) => setFormState((prev: Login) => ({ ...prev, [name]: value }));
+      }: React.ChangeEvent<HTMLInputElement>) => setFormState((prev: LoginRequestDto) => ({ ...prev, [name]: value }));
 
     const handleLogin = async () => {
         try {
-            let loginArg: LoginApiArg = { login: {
+            let loginArg: LoginApiArg = { loginRequestDto: {
                     email: "string",
                     password: "string",
                 }

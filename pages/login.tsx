@@ -1,15 +1,13 @@
 import * as React from 'react';
 import type { NextPage } from 'next';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Link from '../src/Link';
 import {Alert, Button, CircularProgress, Grid, Paper, TextField} from "@mui/material";
-import {Login, LoginApiArg, useLoginMutation} from '../api/chaingate.generated';
+import { LoginRequestDto, LoginApiArg, useLoginMutation} from '../api/chaingate.generated';
 import {useState} from "react";
 import logo from '../public/CHainGate_inverted.svg';
 import Image from 'next/image'
-import {AuthInfo, clearUser, setCredentials} from "../lib/authInfo/reducers";
+import {AuthInfo, setCredentials} from "../lib/authInfo/reducers";
 import {useAppDispatch} from "../lib/hooks";
 import {useRouter} from "next/router";
 
@@ -27,27 +25,30 @@ const Login: NextPage = () => {
 
     const handleChange = ({
       target: { name, value },
-    }: React.ChangeEvent<HTMLInputElement>) => setFormState((prev: Login) => ({ ...prev, [name]: value }));
+    }: React.ChangeEvent<HTMLInputElement>) => setFormState((prev: LoginRequestDto) => ({ ...prev, [name]: value }));
 
     const handleLogin = async (event: any) => {
         event.preventDefault();
         try {
-            debugger
-            let loginArg: LoginApiArg = { login: {
-                    email: "string",
-                    password: "string",
+            let loginArg: LoginApiArg = {
+                loginRequestDto: {
+                    email: formState.email,
+                    password: formState.password,
                 }
             }
-            // await login(loginArg).unwrap()
+
+            const response = await login(loginArg).unwrap()
+
             const authInfo: AuthInfo = {
                 username: formState.email,
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjE1MTYyMzkwMjIsInJvbGVzIjoiQWRtaW4ifQ.IULn2Mkl7aL_R3n2GNT6XT7Y66nuszU4kUwRFXJuOuc",
+                token: response.token,
                 isAuthenticated: true,
             };
 
             dispatch(setCredentials(authInfo));
             await router.push('/login');
         } catch {
+
         }
     }
 
