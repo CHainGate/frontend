@@ -14,12 +14,11 @@ const Home: NextPage = () =>  {
             const token = sessionStorage.getItem('token');
             console.log("LocalState: ", token)
         }
+        if (!authInfo.isAuthenticated) {
+            router.push('/login').then();
+        }
     }, []);
 
-
-    if (false) {
-        router.push('/login');
-    }
 
     return (<></>);
 }
