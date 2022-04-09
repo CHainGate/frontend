@@ -22,7 +22,7 @@ describe('Home', () => {
 describe('Sidebar', () => {
   it('render Sidebar', async() => {
     renderWithStore(<Sidebar />, {})
-    expect(await screen.getAllByText(/Mein Dashboard/i).at(0)).toBeInTheDocument();
+    expect(await screen.getAllByText(/Dashboard/i).at(0)).toBeInTheDocument();
   })
 })
 
