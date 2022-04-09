@@ -5,10 +5,7 @@ import { useDeleteWalletMutation } from '../api/chaingate.api';
 import { DeleteWalletApiArg, WalletResponseDto } from '../api/chaingate.generated';
 
 export default function ActiveWallets({wallets}: {wallets: WalletResponseDto[] | undefined}) {
-  const [
-    deleteWallet, // This is the mutation trigger
-    { isLoading, error } // This is the destructured mutation result
-  ] = useDeleteWalletMutation()
+  const [deleteWallet, { isLoading, error }] = useDeleteWalletMutation()
   const handleDelete = (id: string): void => {
     const arg: DeleteWalletApiArg = {
       walletId: id
@@ -20,7 +17,7 @@ export default function ActiveWallets({wallets}: {wallets: WalletResponseDto[] |
       <><span>currency</span><span>Address</span><span>action</span></>
       {wallets?.map((wallet: WalletResponseDto) => (
         <div key={wallet.id}>
-          <Divider></Divider>
+          <Divider/>
           <><span>{wallet.currency}</span><span>{wallet.address}</span>
             <Button color="primary" variant="contained" onClick={() => handleDelete(wallet.id)}>
               <DeleteIcon/>

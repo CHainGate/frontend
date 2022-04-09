@@ -35,7 +35,7 @@ const Dashboard: NextPage = () => {
               columns={columns}
               pageSize={5}
               rowsPerPageOptions={[5]}
-              ></DataGrid>
+          />
           </div>
       </>
     );

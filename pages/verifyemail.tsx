@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import { Alert, CircularProgress, Container, TextField } from '@mui/material';
+import { Alert, CircularProgress, Container } from '@mui/material';
 import { useVerifyEmailQuery, VerifyEmailApiArg } from '../api/chaingate.generated';
 import { useRouter } from 'next/router';
 import * as React from 'react';

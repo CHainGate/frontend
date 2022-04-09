@@ -20,7 +20,6 @@ const Configuration: NextPage = () => {
           <SwitchMode/>
           <h1>Configuration</h1>
 
-          <h2>Payout Wallet</h2>
           {options.length > 0 && <AddWalletForm options={options}/>}
 
           <ActiveWallets wallets={wallets}/>

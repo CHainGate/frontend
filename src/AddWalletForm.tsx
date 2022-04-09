@@ -8,12 +8,9 @@ export default function AddWalletForm({options}: {options: Currency[]}) {
   const [selectedCurrency, setSelectedCurrency] = useState('')
   const [newPayoutWallet, setNewPayoutWallet] = useState('')
 
-  const [
-    addWallet, // This is the mutation trigger
-    { isLoading, error } // This is the destructured mutation result
-  ] = useAddWalletMutation()
+  const [addWallet, { isLoading, error }] = useAddWalletMutation()
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleSelectionChange = (event: SelectChangeEvent) => {
     setSelectedCurrency(event.target.value);
   };
 
@@ -31,9 +28,9 @@ export default function AddWalletForm({options}: {options: Currency[]}) {
           mode: "test",
         }
       }
-
       addWallet(walletArg).unwrap()
       setSelectedCurrency('')
+      setNewPayoutWallet('')
     } catch {
 
     }
@@ -41,6 +38,7 @@ export default function AddWalletForm({options}: {options: Currency[]}) {
 
   return (
     <>
+      <h2>Payout Wallet</h2>
       <form onSubmit={handleSubmit}>
         <InputLabel id="currency">Currency</InputLabel>
         <Select
@@ -48,12 +46,11 @@ export default function AddWalletForm({options}: {options: Currency[]}) {
           id="currency"
           value={selectedCurrency}
           label="currency"
-          onChange={handleChange}
+          onChange={handleSelectionChange}
         >
-          {options?.map((t: any) => (
-            <MenuItem key={t.shortName} value={t.shortName}>{t.shortName.toUpperCase()}</MenuItem>
+          {options?.map((option: Currency) => (
+            <MenuItem key={option.shortName} value={option.shortName}>{option.shortName?.toUpperCase()}</MenuItem>
           ))}
-
         </Select>
 
         <TextField value={newPayoutWallet} id="payoutAddress" name="payoutAddress" label="Payout Address" type="text" fullWidth variant="standard" required onChange={handleWalletChange} />
