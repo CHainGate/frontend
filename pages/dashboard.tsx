@@ -1,76 +1,44 @@
 import * as React from 'react';
 import type { NextPage } from 'next';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-import {Alert, Button, CircularProgress, Grid, Paper, TextField} from "@mui/material";
-import { LoginRequestDto, LoginApiArg, useLoginMutation} from '../api/chaingate.generated';
-import {useState} from "react";
-import logo from '../public/CHainGate_inverted.svg';
-import Image from 'next/image'
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
-const Home: NextPage = () => {
-    const [formState, setFormState] = useState({
-        email: '',
-        password: '',
-    });
-    const [
-        login, // This is the mutation trigger
-        { isLoading, error } // This is the destructured mutation result
-    ] = useLoginMutation()
+const Dashboard: NextPage = () => {
+    const rows = [
+        {id: "1", priceAmount: 100, priceCurrency: "USD", payAmount: 0.5, payCurrency: "ETH", actuallyPaid: 0.6, transaction: "alsdjkiin", state: "paid", time: new Date()},
+        {id: "2", priceAmount: 100, priceCurrency: "USD", payAmount: 0.5, payCurrency: "ETH", actuallyPaid: 0.6, transaction: "alsdjkiin", state: "paid", time: new Date()},
+        {id: "3", priceAmount: 100, priceCurrency: "USD", payAmount: 0.5, payCurrency: "ETH", actuallyPaid: 0.6, transaction: "alsdjkiin", state: "paid", time: new Date()},
+        {id: "4", priceAmount: 100, priceCurrency: "USD", payAmount: 0.5, payCurrency: "ETH", actuallyPaid: 0.6, transaction: "alsdjkiin", state: "paid", time: new Date()},
+        {id: "5", priceAmount: 100, priceCurrency: "USD", payAmount: 0.5, payCurrency: "ETH", actuallyPaid: 0.6, transaction: "alsdjkiin", state: "paid", time: new Date()},
+        {id: "6", priceAmount: 100, priceCurrency: "USD", payAmount: 0.5, payCurrency: "ETH", actuallyPaid: 0.6, transaction: "alsdjkiin", state: "paid", time: new Date()},
+        {id: "7", priceAmount: 100, priceCurrency: "USD", payAmount: 0.5, payCurrency: "ETH", actuallyPaid: 0.6, transaction: "alsdjkiin", state: "paid", time: new Date()},
+        {id: "8", priceAmount: 100, priceCurrency: "USD", payAmount: 0.5, payCurrency: "ETH", actuallyPaid: 0.6, transaction: "alsdjkiin", state: "paid", time: new Date()},
+        {id: "9", priceAmount: 100, priceCurrency: "USD", payAmount: 0.5, payCurrency: "ETH", actuallyPaid: 0.6, transaction: "alsdjkiin", state: "waiting", time: new Date()}
+    ];
 
-    const handleChange = ({
-          target: { name, value },
-      }: React.ChangeEvent<HTMLInputElement>) => setFormState((prev: LoginRequestDto) => ({ ...prev, [name]: value }));
-
-    const handleLogin = async () => {
-        try {
-            let loginArg: LoginApiArg = { loginRequestDto: {
-                    email: "string",
-                    password: "string",
-                }
-            }
-            await login(loginArg).unwrap()
-        } catch {
-        }
-    }
-
-    let content = (
-        <>
-            {error && <Box mb={2}><Alert severity="error">Login fehlgeschlagen! Bitte überprüfen sie Ihre Eingaben.</Alert></Box>}
-            <TextField value={formState.email} id="email" name="email" label="email" type="text" fullWidth variant="standard" required onChange={handleChange} />
-            <TextField id="password" name="password" label="Password" type="password" fullWidth variant="standard" required onChange={handleChange} />
-        </>
-    );
-
-    if (isLoading) {
-        content = <CircularProgress />;
-    }
+    const columns: GridColDef[] = [
+        { field: 'id', headerName: 'ID', width: 50 },
+        { field: 'priceAmount', headerName: 'Price Amount', width: 130 },
+        { field: 'priceCurrency', headerName: 'Price Currency', width: 130 },
+        { field: 'payAmount', headerName: 'Pay Amount', width: 130 },
+        { field: 'payCurrency', headerName: 'Pay Currency', width: 130 },
+        { field: 'actuallyPaid', headerName: 'Actually Paid', width: 130 },
+        { field: 'transaction', headerName: 'Transaction', width: 160 },
+        { field: 'state', headerName: 'State', width: 160 },
+        { field: 'time', headerName: 'Time', type: "dateTime", width: 160 },
+    ];
 
     return (
-        <Container maxWidth="sm">
-            <form onSubmit={handleLogin} className="login-form">
-                <Grid
-                    container
-                    direction="column"
-                    justifyContent="center"
-                    alignItems="center"
-                >
-
-                    <Box className="login-form-logo-container" my={2}>
-                        <Image height={142} width={230} src={logo} alt="Logo exRap" className="logo" />
-                    </Box>
-                    <Box my={2}>
-                        {content}
-                    </Box>
-                    <Box my={2} width="100%">
-                        <Button type="submit" color="primary" variant="contained" fullWidth>
-                            Login
-                        </Button>
-                    </Box>
-                </Grid>
-            </form>
-        </Container>
-    )
+      <>
+          <div style={{ marginLeft: 300, height: 500, width: '80%' }}>
+          <DataGrid sx={{minWidth: 850}}
+              rows={rows}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              ></DataGrid>
+          </div>
+      </>
+    );
 };
 
-export default Home;
+export default Dashboard;
