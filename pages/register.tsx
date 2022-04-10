@@ -21,7 +21,6 @@ const Register: NextPage = () => {
   const handleChange = ({
     target: { name, value },
   }: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(name, value)
     setFormState((prev: RegisterRequestDto) => ({ ...prev, [name]: value }));
   }
 
@@ -38,8 +37,7 @@ const Register: NextPage = () => {
           password: formState.password
         }
       }
-      const response = await register(registerArg).unwrap()
-      console.log(response)
+      await register(registerArg).unwrap()
     } catch {
 
     }

@@ -6,6 +6,8 @@ import AddWalletForm from '../src/AddWalletForm';
 import ActiveWallets from '../src/ActiveWallets';
 import { useGetConfigQuery, useGetWalletsQuery } from '../api/chaingate.api';
 import { GetWalletsApiArg } from '../api/chaingate.generated';
+import AddApiKeyForm from '../src/AddApiKeyForm';
+import ActiveApiKeys from '../src/ActiveApiKeys';
 
 const Configuration: NextPage = () => {
   const { data: config, isError: isErrorConfig } = useGetConfigQuery({})
@@ -23,6 +25,14 @@ const Configuration: NextPage = () => {
           {options.length > 0 && <AddWalletForm options={options}/>}
 
           <ActiveWallets wallets={wallets}/>
+
+          <h2>Secret API Key</h2>
+          <AddApiKeyForm keyType="secret" buttonText="create secret api key"/>
+          <ActiveApiKeys keyType="secret"/>
+
+          <h2>Public API Key</h2>
+          <AddApiKeyForm keyType="public" buttonText="create public api key"/>
+          <ActiveApiKeys keyType="public"/>
         </Container>
     )
 };

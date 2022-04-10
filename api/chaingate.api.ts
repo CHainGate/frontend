@@ -1,7 +1,7 @@
 import { chaingateApi as t } from './chaingate.generated'
 
 export const chaingateApi = t.enhanceEndpoints({
-  addTagTypes: ['Wallet'],
+  addTagTypes: ['Wallet', "API-KEY"],
   endpoints: {
     // basic notation: just specify properties to be overridden
     getWallets: {
@@ -13,6 +13,15 @@ export const chaingateApi = t.enhanceEndpoints({
     deleteWallet: {
       invalidatesTags: ['Wallet'],
     },
+    getApiKey: {
+      providesTags: ["API-KEY"],
+    },
+    generateApiKey: {
+      invalidatesTags: ["API-KEY"],
+    },
+    deleteApiKey: {
+      invalidatesTags: ["API-KEY"],
+    }
   },
 });
 
