@@ -14,14 +14,8 @@ import {useRouter} from "next/router";
 const Login: NextPage = () => {
     const dispatch = useAppDispatch();
     const router = useRouter();
-    const [formState, setFormState] = useState({
-        email: '',
-        password: '',
-    });
-    const [
-        login, // This is the mutation trigger
-        { isLoading, error } // This is the destructured mutation result
-    ] = useLoginMutation()
+    const [formState, setFormState] = useState({ email: '', password: '' });
+    const [login, { isLoading, error }] = useLoginMutation();
 
     const handleChange = ({
       target: { name, value },
@@ -46,7 +40,7 @@ const Login: NextPage = () => {
             };
 
             dispatch(setCredentials(authInfo));
-            await router.push('/login');
+            router.push('/dashboard');
         } catch {
 
         }

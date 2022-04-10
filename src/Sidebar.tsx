@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement } from 'react';
 import {
     CssBaseline,
     Divider, Drawer, Hidden, IconButton,
@@ -11,12 +11,10 @@ import createStyles from "@mui/styles/createStyles";
 import {Theme} from "@mui/system";
 import {useAppDispatch, useAppSelector} from "../lib/hooks";
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import SettingsIcon from '@mui/icons-material/Settings';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import ArticleIcon from '@mui/icons-material/Article';
 import MenuIcon from '@mui/icons-material/Menu';
 import logo from '../public/CHainGate_inverted.svg';
 import {AuthInfo, clearUser} from "../lib/authInfo/reducers";
@@ -90,16 +88,7 @@ export default function Sidebar() {
     const classes: ClassNameMap = useStyles();
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    const renewTime = 1200; // in s = 20min
-/*    const { data } = useLoginRenewTokenQuery({}, { pollingInterval: renewTime * 1000 });*/
     const currentUser: AuthInfo = useAppSelector((state) => state.authInfo);
-    const [isCredentialsModalOpen, setIsCredentialsModalOpen] = useState(false);
-
-/*    const { data: user } = useUsersGetUserQuery({ userId: currentUser.userid || 0 });*/
-
-/*    useEffect(() => {
-        if (data) updateStore(data.token, dispatch);
-    }, [data]);*/
 
     const handleSignout = () => {
         dispatch(clearUser());
@@ -114,32 +103,20 @@ export default function Sidebar() {
         setMobileOpen(false);
     };
 
-    const handleChangePassword = () => {
-        setIsCredentialsModalOpen(true);
-    };
-
     const pages : Page[] = [
-        { uri: '/dashboard', label: 'Mein Dashboard', icon: <DashboardIcon /> },
-        { uri: '/config', label: 'Projekte', icon: <AccountTreeIcon /> },
+        { uri: '/dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
+        { uri: '/config', label: 'Configuration', icon: <SettingsIcon  /> },
     ];
-
-    if (currentUser?.roles?.includes('ProjectContributor')) {
-        pages.splice(1, 0, { uri: '/timetracking', label: 'Meine Zeiterfassung', icon: <AccessTimeIcon /> });
-    }
-
-    if (currentUser?.roles?.includes('Admin')) {
-        pages.push({ uri: '/administration', label: 'Administration', icon: <SettingsIcon /> });
-    }
 
     const secondaryPages : NavigationAction[] = [
         { fn: handleSignout, label: 'Ausloggen', icon: <ExitToAppIcon /> },
-        { fn: handleChangePassword, label: 'Passwort ändern', icon: <VpnKeyIcon /> },
+        { fn: handleSignout, label: 'API Doc', icon: <ArticleIcon  /> },
     ];
 
     const drawer = (
         <div>
             <div className="logo-container">
-                <Image height={142} width={230} src={logo} alt="Logo exRap" className="logo" />
+                <Image height={142} width={230} src={logo} alt="Logo CHainGate" className="logo" />
             </div>
             <Divider />
             <List className={classes.userItem}>

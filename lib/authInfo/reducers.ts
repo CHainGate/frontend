@@ -41,7 +41,7 @@ const userSlice = createSlice({
             localStorage.setItem('token', token);
         },
         clearUser: () => {
-            sessionStorage.clear();
+            localStorage.removeItem('token');
         },
     },
 });

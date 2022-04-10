@@ -8,7 +8,9 @@ import theme from "../src/theme";
 import {CssBaseline} from "@mui/material";
 import Sidebar from "../src/Sidebar";
 import * as React from "react";
-import {useAppSelector} from "../lib/hooks";
+import { useAppDispatch, useAppSelector } from "../lib/hooks";
+import PrivateRoute from '../src/PrivateRoute';
+
 
 
 const { wrapper } = require("../lib/store");
@@ -36,7 +38,9 @@ function App(props : any) {
                 {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
                 <CssBaseline />
                 {comp}
-                <Component {...pageProps} />
+                <PrivateRoute>
+                  <Component {...pageProps} />
+                </PrivateRoute>
             </ThemeProvider>
         </CacheProvider>
     );
