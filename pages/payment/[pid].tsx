@@ -13,7 +13,7 @@ import {
 import {useRouter} from "next/router";
 import {useCallback, useEffect, useState} from "react";
 
-import styles from "../styles/Payment.module.scss"
+import styles from "../../styles/Payment.module.scss"
 
 export const isBrowser = typeof window !== "undefined";
 
@@ -66,13 +66,9 @@ const Payment: NextPage = () =>  {
                 break
             case "received-tx":
                 body = (
-                    <div className={styles["success-checkmark"]}>
-                        <div className={styles["check-icon"]}>
-                            <span className={`${styles.line} ${styles.tip}`}></span>
-                            <span className={`${styles.line} ${styles.long}`}></span>
-                            <div className={styles["circle"]}></div>
-                            <div className={styles["fix"]}></div>
-                        </div>
+                    // https://codepen.io/scottloway/pen/zqoLyQ
+                    <div className={styles.loader}>
+                        <div className={`${styles.checkmark} ${styles.draw}`}></div>
                     </div>
                 )
                 break
@@ -105,12 +101,12 @@ const Payment: NextPage = () =>  {
 
     return (
         <React.Fragment>
-            <Grid container className={'root'} spacing={0} direction="column" alignItems="center" justifyContent="center" height={'100vh'} width={'100vw'}>
+            <Grid className={'root'} container spacing={0} direction="column" alignItems="center" justifyContent="center" height={'100vh'} width={'100vw'}>
                 {pid}
 {/*                <Typography variant="h3" gutterBottom>
                     Select cryptocurrency
                 </Typography>*/}
-                <Grid container spacing={3} maxWidth="sm">
+                <Grid container spacing={3} maxWidth="sm" className={styles.successCheckmark}>
                     <Grid item xs={12}>
                         {body}
                     </Grid>
