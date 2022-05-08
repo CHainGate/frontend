@@ -1,8 +1,8 @@
 import * as React from 'react';
 import type { NextPage } from 'next';
 import {
-    Checkbox, CircularProgress,
-    Container,
+    Button,
+    Chip, CircularProgress,
     FormControl,
     FormControlLabel,
     FormLabel,
@@ -11,6 +11,7 @@ import {
     Typography
 } from '@mui/material';
 import {useRouter} from "next/router";
+import DoneIcon from '@mui/icons-material/Done';
 import {useCallback, useEffect, useState} from "react";
 
 import styles from "../../styles/Payment.module.scss"
@@ -25,7 +26,8 @@ type SocketMessage = {
 const Payment: NextPage = () =>  {
     const router = useRouter()
     const { pid } = router.query
-    const initialStage: SocketMessage = {type: "received-tx", data: {}}
+    const initialStage: SocketMessage = {type: "loading", data: {}}
+    const [formValues, setFormValues] = useState({})
     const [wsInstance, setWsInstance] = useState(null as unknown as WebSocket | null);
     const [stage, setStage] = useState(initialStage);
 
@@ -42,6 +44,19 @@ const Payment: NextPage = () =>  {
         setWsInstance(newWs);
     }, [wsInstance])
 
+    const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+        const { name, value } = e.target;
+        setFormValues({
+            ...formValues,
+            [name]: value,
+        });
+    };
+
+    const handleSubmit = (event: { preventDefault: () => void; }) => {
+        event.preventDefault();
+        console.log(formValues);
+    };
+
     let body = <CircularProgress />
 
     if(stage) {
@@ -51,25 +66,51 @@ const Payment: NextPage = () =>  {
                 break
             case "currencies":
                 body = (
-                    <FormControl>
-                        <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
-                        <RadioGroup
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            defaultValue="female"
-                            name="radio-buttons-group"
-                        >
-                            <FormControlLabel value="eth" control={<Radio />} label="ethereum" />
-                            <FormControlLabel value="btc" control={<Radio />} label="bitcoin" />
-                        </RadioGroup>
-                    </FormControl>
+                    <form onSubmit={handleSubmit}>
+                        <FormControl>
+                            <FormLabel id="demo-radio-buttons-group-label">Cryptocurrency</FormLabel>
+                            <RadioGroup
+                                aria-labelledby="demo-radio-buttons-group-label"
+                                defaultValue="eth"
+                                name="radio-buttons-group"
+                                onChange={handleInputChange}
+                            >
+                                <FormControlLabel value="eth" control={<Radio />} label="ethereum" />
+                                <FormControlLabel value="btc" control={<Radio />} label="bitcoin" />
+                            </RadioGroup>
+                        </FormControl>
+                        <Button variant="contained" type="submit">Absenden</Button>
+                    </form>
+            )
+                break
+            case "wait-for-tx":
+                body = (
+                    <>
+                        <div className={styles.loader}>
+                        </div>
+                        <TextField id="standard-basic" label="Standard" variant="standard" value={"0x....."} />
+                    </>
                 )
                 break
             case "received-tx":
                 body = (
                     // https://codepen.io/scottloway/pen/zqoLyQ
-                    <div className={styles.loader}>
+                    <div className={`${styles.loader} ${styles["load-complete"]}`}>
                         <div className={`${styles.checkmark} ${styles.draw}`}></div>
                     </div>
+                )
+                break
+            case "confirmed":
+                body = (
+                    <>
+                        <div className={`${styles.loader} ${styles["load-complete"]}`}>
+                            <div className={`${styles.checkmark} ${styles.draw}`}></div>
+                        </div>
+                        <Chip
+                            label="confirmed"
+                            deleteIcon={<DoneIcon />}
+                        />
+                    </>
                 )
                 break
             default:
@@ -84,7 +125,6 @@ const Payment: NextPage = () =>  {
         if(isBrowser && pid) {
             ws = new WebSocket(`ws://127.0.0.1:8000/ws?pid=${pid}`);
             ws.addEventListener('message', function (event) {
-                debugger
                 setStage(JSON.parse(event.data))
                 console.log('Message from server ', event.data);
             });
@@ -103,9 +143,9 @@ const Payment: NextPage = () =>  {
         <React.Fragment>
             <Grid className={'root'} container spacing={0} direction="column" alignItems="center" justifyContent="center" height={'100vh'} width={'100vw'}>
                 {pid}
-{/*                <Typography variant="h3" gutterBottom>
+                <Typography variant="h3" gutterBottom>
                     Select cryptocurrency
-                </Typography>*/}
+                </Typography>
                 <Grid container spacing={3} maxWidth="sm" className={styles.successCheckmark}>
                     <Grid item xs={12}>
                         {body}
