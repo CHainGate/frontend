@@ -19,14 +19,14 @@ import styles from "../../styles/Payment.module.scss"
 export const isBrowser = typeof window !== "undefined";
 
 type SocketMessage = {
-    type: string
-    data: any
+    messageType: string
+    body: any
 }
 
 const Payment: NextPage = () =>  {
     const router = useRouter()
     const { pid } = router.query
-    const initialStage: SocketMessage = {type: "loading", data: {}}
+    const initialStage: SocketMessage = {messageType: "loading", body: {}}
     const [formValues, setFormValues] = useState({})
     const [wsInstance, setWsInstance] = useState(null as unknown as WebSocket | null);
     const [stage, setStage] = useState(initialStage);
@@ -55,24 +55,28 @@ const Payment: NextPage = () =>  {
     const handleSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
         console.log(formValues);
+        const currencySelection: SocketMessage = {
+            messageType: 'currency-selection',
+            body: formValues
+        }
+        wsInstance?.send(JSON.stringify(currencySelection))
     };
 
     let body = <CircularProgress />
 
     if(stage) {
-        switch (stage.type) {
+        switch (stage.messageType) {
             case "loading":
                 body = <CircularProgress />
                 break
-            case "currencies":
+            case "currency_selection":
                 body = (
                     <form onSubmit={handleSubmit}>
                         <FormControl>
                             <FormLabel id="demo-radio-buttons-group-label">Cryptocurrency</FormLabel>
                             <RadioGroup
                                 aria-labelledby="demo-radio-buttons-group-label"
-                                defaultValue="eth"
-                                name="radio-buttons-group"
+                                name="currency"
                                 onChange={handleInputChange}
                             >
                                 <FormControlLabel value="eth" control={<Radio />} label="ethereum" />
@@ -83,7 +87,7 @@ const Payment: NextPage = () =>  {
                     </form>
             )
                 break
-            case "wait-for-tx":
+            case "waiting":
                 body = (
                     <>
                         <div className={styles.loader}>
@@ -92,7 +96,7 @@ const Payment: NextPage = () =>  {
                     </>
                 )
                 break
-            case "received-tx":
+            case "paid":
                 body = (
                     // https://codepen.io/scottloway/pen/zqoLyQ
                     <div className={`${styles.loader} ${styles["load-complete"]}`}>

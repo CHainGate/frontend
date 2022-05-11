@@ -7,6 +7,7 @@ import Container from '@mui/material/Container';
 import * as React from 'react';
 import { useState } from 'react';
 import { RegisterMerchantApiArg, RegisterRequestDto, useRegisterMerchantMutation } from '../api/chaingate.generated';
+import Link from "next/link";
 
 
 const Register: NextPage = () => {
@@ -74,6 +75,11 @@ const Register: NextPage = () => {
             <Button type="submit" color="primary" variant="contained" fullWidth>
               Register
             </Button>
+            <Link href='/login' >
+              <Button type="submit" color="primary" variant="contained" fullWidth>
+                Login
+              </Button>
+            </Link>
           </Box>
         </Grid>
       </form>
