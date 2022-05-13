@@ -7,7 +7,7 @@ const dynamicBaseQuery: BaseQueryFn <string | FetchArgs, unknown, FetchBaseQuery
   args,
   WebApi,
   extraOptions) => {
-    const baseUrl = process.env.NEXT_PUBLIC_ENVIRONMENT == "dev"
+    const baseUrl = process.env.NODE_ENV == "development"
       ? "http://localhost:8000/api/config/"
       : "http://localhost/backend/api/config/";
     const rawBaseQuery = fetchBaseQuery({

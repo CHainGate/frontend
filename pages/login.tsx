@@ -10,6 +10,7 @@ import Image from 'next/image'
 import {AuthInfo, setCredentials} from "../lib/authInfo/reducers";
 import {useAppDispatch} from "../lib/hooks";
 import {useRouter} from "next/router";
+import Link from "next/link";
 
 const Login: NextPage = () => {
     const dispatch = useAppDispatch();
@@ -78,6 +79,11 @@ const Login: NextPage = () => {
                         <Button type="submit" color="primary" variant="contained" fullWidth>
                             Login
                         </Button>
+                        <Link href='/register'>
+                            <Button type="submit" color="primary" variant="contained" fullWidth>
+                                Register
+                            </Button>
+                        </Link>
                     </Box>
                 </Grid>
             </form>

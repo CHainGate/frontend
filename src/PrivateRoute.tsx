@@ -34,19 +34,20 @@ export default function PrivateRoute({ children }: any) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const authInfo = useAppSelector((state) => state.authInfo);
-  const openPages = ['/login', '/register', '/verifyemail'];
+  const openPages = ['/login', '/register', '/verifyemail', '/payment'];
+  const paymentPage = '/payment/';
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token && !authInfo.isAuthenticated) {
       updateStore(token, dispatch);
-    } else if (!openPages.includes(router.pathname)) {
+    } else if (!openPages.includes(router.pathname) && !router.pathname.startsWith(paymentPage)) {
       clearUser();
       router.push('/login');
     }
   }, [])
 
-  if (!authInfo.isAuthenticated && !openPages.includes(router.pathname)) {
+  if (!authInfo.isAuthenticated && !openPages.includes(router.pathname) && !router.pathname.startsWith(paymentPage)) {
     return <CircularProgress/>;
   }
 
