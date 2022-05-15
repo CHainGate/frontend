@@ -2,16 +2,17 @@ import * as React from 'react';
 import type { NextPage } from 'next';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useGetLoggingInformationQuery } from '../api/chaingate.api';
-import { LoggingInformationsResponseDto, PaymentHistory } from '../api/chaingate.generated';
+import {LoggingInformationsResponseDto, PaymentHistory, useGetConfigQuery} from '../api/chaingate.generated';
+import BigNumber from "bignumber.js";
 
 interface LoggingRow {
     id: string;
     paymentId: string;
     priceAmount: number;
     priceCurrency: string;
-    payAmount: number;
+    payAmount: BigNumber;
     payCurrency: string;
-    actuallyPaid: number;
+    actuallyPaid: BigNumber;
     transaction: string;
     state: string;
     createdAt: Date;
@@ -21,18 +22,27 @@ interface LoggingRow {
 
 const Dashboard: NextPage = () => {
     const { data } = useGetLoggingInformationQuery({mode: "test"})
+    const {data: configData} = useGetConfigQuery({})
     let rows: LoggingRow[] = [];
 
     data?.forEach((payment: LoggingInformationsResponseDto) => {
         payment.history?.forEach((history: PaymentHistory) => {
+            console.log(history.pay_amount)
+            let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === history.pay_currency)?.conversion_factor
+            console.log(factor)
+            let pay_amount_big = new BigNumber(history.pay_amount)
+            let actually_paid_big = new BigNumber(history.actually_paid)
+            let factor_big = new BigNumber(factor || 1)
+            let payAmount = factor ? pay_amount_big.div(factor_big) : new BigNumber(0)
+            let actuallyPaid = factor ? actually_paid_big.div(factor_big) : new BigNumber(0)
             let row: LoggingRow = {
                 id: history.id,
                 paymentId: payment.payment_id,
                 priceAmount: history.price_amount,
                 priceCurrency: history.price_currency,
-                payAmount: history.pay_amount,
+                payAmount: payAmount,
                 payCurrency: history.pay_currency,
-                actuallyPaid: history.actually_paid || 0,
+                actuallyPaid: actuallyPaid,
                 transaction: "transaction here",
                 state: history.payment_state,
                 createdAt:  new Date(payment.created_at),
