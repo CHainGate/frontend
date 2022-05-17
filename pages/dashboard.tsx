@@ -27,9 +27,7 @@ const Dashboard: NextPage = () => {
 
     data?.forEach((payment: LoggingInformationsResponseDto) => {
         payment.history?.forEach((history: PaymentHistory) => {
-            console.log(history.pay_amount)
             let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === history.pay_currency)?.conversion_factor
-            console.log(factor)
             let pay_amount_big = new BigNumber(history.pay_amount)
             let actually_paid_big = new BigNumber(history.actually_paid)
             let factor_big = new BigNumber(factor || 1)

@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { NextPage } from 'next';
 import {
     Button,
-    Chip, CircularProgress,
+    Chip, CircularProgress, Divider,
     FormControl,
     FormControlLabel,
     FormLabel,
@@ -13,8 +13,16 @@ import {
 import {useRouter} from "next/router";
 import DoneIcon from '@mui/icons-material/Done';
 import {useCallback, useEffect, useState} from "react";
+import btc_logo from '../../public/bitcoin.svg';
+import eth_logo from '../../public/ethereum.svg';
 
 import styles from "../../styles/Payment.module.scss"
+import Box from "@mui/material/Box";
+import Image from "next/image";
+import logo from "../../public/CHainGate_inverted.svg";
+import {useCountdown} from "../../src/Countdown";
+import {useGetConfigQuery} from "../../api/chaingate.generated";
+import BigNumber from "bignumber.js";
 
 export const isBrowser = typeof window !== "undefined";
 
@@ -23,13 +31,64 @@ type SocketMessage = {
     body: any
 }
 
+
+const ExpiredNotice = () => {
+    return (
+        <div className="expired-notice">
+            <span>Expired!!!</span>
+            <p>Please select a future date and time.</p>
+        </div>
+    );
+};
+
+const CountdownTimer = ({ targetDate }: any) => {
+    const [days, hours, minutes, seconds] = useCountdown(targetDate);
+
+    if (days + hours + minutes + seconds <= 0) {
+        return <ExpiredNotice />;
+    } else {
+        return (
+            <ShowCounter
+                days={days}
+                hours={hours}
+                minutes={minutes}
+                seconds={seconds}
+            />
+        );
+    }
+};
+
+const DateTimeDisplay = ({ value, type, isDanger }: any) => {
+    return (
+        <span className={isDanger ? 'countdown danger' : 'countdown'}>
+            <span>{value}</span>
+        </span>
+    );
+};
+
+const ShowCounter = ({ days, hours, minutes, seconds }: any) => {
+    return (
+        <div className="show-counter">
+            <DateTimeDisplay value={minutes} isDanger={false} />:
+            <DateTimeDisplay value={seconds} isDanger={false} />
+        </div>
+    );
+};
+
 const Payment: NextPage = () =>  {
     const router = useRouter()
     const { pid } = router.query
     const initialStage: SocketMessage = {messageType: "loading", body: {}}
-    const [formValues, setFormValues] = useState({})
+    const [formValues, setFormValues] = useState({currency: ''})
     const [wsInstance, setWsInstance] = useState(null as unknown as WebSocket | null);
     const [stage, setStage] = useState(initialStage);
+
+    const {data: configData} = useGetConfigQuery({})
+
+    const THREE_DAYS_IN_MS = 15 * 60 * 1000;
+    const NOW_IN_MS = new Date().getTime();
+
+    const dateTimeAfterThreeDays = NOW_IN_MS + THREE_DAYS_IN_MS;
 
 // Call when updating the ws connection
     const updateWs = useCallback((url) => {
@@ -52,6 +111,13 @@ const Payment: NextPage = () =>  {
         });
     };
 
+    const handleSelectCurrency = (currency: string) => {
+        setFormValues({
+            ...formValues,
+            'currency': currency,
+        });
+    };
+
     const handleSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
         console.log(formValues);
@@ -62,38 +128,64 @@ const Payment: NextPage = () =>  {
         wsInstance?.send(JSON.stringify(currencySelection))
     };
 
-    let body = <CircularProgress />
+    let body = <Grid container alignItems={"center"} justifyContent={"center"} flexDirection={'column'}><CircularProgress /></Grid>
 
     if(stage) {
+        let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === stage.body.Currency)?.conversion_factor
+        let pay_amount_big = new BigNumber(stage.body.PayAmount)
+        let factor_big = new BigNumber(factor || 1)
+        let payAmount = factor ? pay_amount_big.div(factor_big) : new BigNumber(0)
+
         switch (stage.messageType) {
             case "loading":
                 body = <CircularProgress />
                 break
             case "currency_selection":
                 body = (
-                    <form onSubmit={handleSubmit}>
-                        <FormControl>
-                            <FormLabel id="demo-radio-buttons-group-label">Cryptocurrency</FormLabel>
-                            <RadioGroup
-                                aria-labelledby="demo-radio-buttons-group-label"
-                                name="currency"
-                                onChange={handleInputChange}
-                            >
-                                <FormControlLabel value="eth" control={<Radio />} label="ethereum" />
-                                <FormControlLabel value="btc" control={<Radio />} label="bitcoin" />
-                            </RadioGroup>
-                        </FormControl>
-                        <Button variant="contained" type="submit">Absenden</Button>
-                    </form>
+                    <>
+                        <Typography variant="h4" gutterBottom marginBottom={3} textAlign={'center'}>
+                            Choose your cryptocurrency...
+                        </Typography>
+                        <form onSubmit={handleSubmit}>
+                            <Grid container marginBottom={5}>
+                                <Grid item xs={6}
+                                      className={`${formValues.currency === 'eth' ? styles.currencyselected : ''} ` + styles.currency}
+                                      onClick={() => handleSelectCurrency('eth')}
+                                      padding={2}
+                                >
+                                    <Box>
+                                        <Image height={142} width={230} src={eth_logo} alt="Logo CHainGate" className="logo" />
+                                    </Box>
+                                    <Box textAlign={'center'} marginTop={2} fontWeight={'bold'}>Ethereum</Box>
+                                </Grid >
+                                <Grid item xs={6}
+                                      className={`${formValues.currency === 'btc' ? styles.currencyselected : ''} ` + styles.currency}
+                                      onClick={() => handleSelectCurrency('btc')}
+                                      padding={2}
+                                >
+                                    <Box>
+                                        <Image height={142} width={230} src={btc_logo} alt="Logo CHainGate" className="logo" />
+                                    </Box>
+                                    <Box textAlign={'center'} marginTop={2} fontWeight={'bold'}>Bitcoin</Box>
+                                </Grid >
+                            </Grid>
+                            <Button fullWidth variant="contained" type="submit">Absenden</Button>
+                        </form>
+                    </>
             )
                 break
+            case "partially_paid":
             case "waiting":
                 body = (
-                    <>
-                        <div className={styles.loader}>
-                        </div>
-                        <TextField id="standard-basic" label="Standard" variant="standard" value={"0x....."} />
-                    </>
+                    <Grid container alignItems={"center"} justifyContent={"center"} flexDirection={'column'}>
+                        <Grid item className={styles.loader} />
+                        <Grid marginBottom={5}>
+                            <Typography variant="h5">{payAmount.toString()} ETH</Typography>
+                        </Grid>
+                        <Grid width={'100%'}>
+                            <TextField fullWidth label="Adresse" variant="standard" value={stage.body.PayAddress} />
+                        </Grid>
+                    </Grid>
                 )
                 break
             case "paid":
@@ -105,6 +197,22 @@ const Payment: NextPage = () =>  {
                 )
                 break
             case "confirmed":
+            case "forwarded":
+            case "finished":
+                body = (
+                    <Box alignItems={"center"} justifyContent={"center"} display={'flex'}>
+                        <Box className={`${styles.loader} ${styles["load-complete"]}`} >
+                            <div className={`${styles.checkmark} ${styles.draw}`}></div>
+                            <Chip
+                                className={styles.chip}
+                                label="confirmed"
+                                deleteIcon={<DoneIcon />}
+                            />
+                        </Box>
+                    </Box>
+                )
+                break
+            case "expired":
                 body = (
                     <>
                         <div className={`${styles.loader} ${styles["load-complete"]}`}>
@@ -129,6 +237,7 @@ const Payment: NextPage = () =>  {
         if(isBrowser && pid) {
             ws = new WebSocket(`ws://127.0.0.1:8000/ws?pid=${pid}`);
             ws.addEventListener('message', function (event) {
+                debugger
                 setStage(JSON.parse(event.data))
                 console.log('Message from server ', event.data);
             });
@@ -142,19 +251,27 @@ const Payment: NextPage = () =>  {
         }
     }, [pid])
 
-
     return (
         <React.Fragment>
-            <Grid className={'root'} container spacing={0} direction="column" alignItems="center" justifyContent="center" height={'100vh'} width={'100vw'}>
-                {pid}
-                <Typography variant="h3" gutterBottom>
-                    Select cryptocurrency
-                </Typography>
-                <Grid container spacing={3} maxWidth="sm" className={styles.successCheckmark}>
-                    <Grid item xs={12}>
-                        {body}
+            <Grid className={styles.root} height={'100%'} container spacing={0} direction="column" alignItems="center" justifyContent="center">
+                <Box className={styles.container} borderRadius={4} minWidth={'30vw'}>
+                    <Box className={styles.paymentid} alignItems='center' p={2} borderRadius={'4px 4px 0px 0px'}>
+                        <Grid container alignItems={'center'}>
+                            <Grid item>
+                                <Typography>Payment ID</Typography>
+                                <Typography>{pid}</Typography>
+                            </Grid>
+                            <Grid item marginLeft={'auto'}>
+                                <CountdownTimer targetDate={stage?.body.ExpireTime || dateTimeAfterThreeDays} />
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Grid container className={styles.successCheckmark} p={2}>
+                        <Grid item xs={12} alignItems={"center"} justifyContent={"center"} display={'flex'}>
+                            {body}
+                        </Grid>
                     </Grid>
-                </Grid>
+                </Box>
             </Grid>
         </React.Fragment>
     );
