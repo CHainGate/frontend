@@ -10,6 +10,7 @@ import Sidebar from "../src/Sidebar";
 import * as React from "react";
 import { useAppDispatch, useAppSelector } from "../lib/hooks";
 import PrivateRoute from '../src/PrivateRoute';
+import {useRouter} from "next/router";
 
 
 
@@ -21,9 +22,10 @@ const clientSideEmotionCache = createEmotionCache();
 function App(props : any) {
     const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
     const authInfo = useAppSelector((state) => state.authInfo);
+    const router = useRouter()
 
     let comp;
-    if (authInfo.isAuthenticated) {
+    if (authInfo.isAuthenticated && !router.pathname.startsWith('/payment/')) {
         comp = <Sidebar />;
     } else {
         comp = <></>;

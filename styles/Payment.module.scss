@@ -7,6 +7,37 @@ $check-left: ($loader-size/6 + $loader-size/12);
 $check-thickness: 3px;
 $check-color: $brand-success;
 
+.root {
+  background: #00001C;
+}
+
+.container {
+  background: #fff;
+}
+
+.paymentid {
+  background: #ddd;
+}
+
+.currency {
+  cursor: pointer;
+
+  &:hover {
+    background: #E5FFE5;
+  }
+}
+
+.currencyselected {
+  background: #C1FFC1;
+}
+
+.chip {
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -45px;
+  position: absolute;
+}
+
 .loader {
   margin-bottom: $loader-size/2;
   border: 1px solid rgba(0, 0, 0, 0.2);
