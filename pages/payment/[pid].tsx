@@ -142,7 +142,7 @@ const Payment: NextPage = () =>  {
                 break
             case "currency_selection":
                 body = (
-                    <>
+                    <Box>
                         <Typography variant="h4" gutterBottom marginBottom={3} textAlign={'center'}>
                             Choose your cryptocurrency...
                         </Typography>
@@ -171,7 +171,7 @@ const Payment: NextPage = () =>  {
                             </Grid>
                             <Button fullWidth variant="contained" type="submit">Absenden</Button>
                         </form>
-                    </>
+                    </Box>
             )
                 break
             case "partially_paid":
@@ -205,6 +205,7 @@ const Payment: NextPage = () =>  {
                             <div className={`${styles.checkmark} ${styles.draw}`}></div>
                             <Chip
                                 className={styles.chip}
+                                color="success"
                                 label="confirmed"
                                 deleteIcon={<DoneIcon />}
                             />
@@ -214,15 +215,18 @@ const Payment: NextPage = () =>  {
                 break
             case "expired":
                 body = (
-                    <>
-                        <div className={`${styles.loader} ${styles["load-complete"]}`}>
-                            <div className={`${styles.checkmark} ${styles.draw}`}></div>
-                        </div>
-                        <Chip
-                            label="confirmed"
-                            deleteIcon={<DoneIcon />}
-                        />
-                    </>
+                    <Box alignItems={"center"} justifyContent={"center"} display={'flex'}>
+                        <Box className={`${styles.loader} ${styles["load-complete"]} ${styles.cross}`}>
+                            <div className={`${styles.crossline} ${styles.crosslineleft} ${styles.draw}`}></div>
+                            <div className={`${styles.crossline} ${styles.crosslineright} ${styles.draw}`}></div>
+                            <Chip
+                                className={styles.chip}
+                                color="error"
+                                label="expired"
+                                deleteIcon={<DoneIcon />}
+                            />
+                        </Box>
+                    </Box>
                 )
                 break
             default:
@@ -237,7 +241,6 @@ const Payment: NextPage = () =>  {
         if(isBrowser && pid) {
             ws = new WebSocket(`ws://127.0.0.1:8000/ws?pid=${pid}`);
             ws.addEventListener('message', function (event) {
-                debugger
                 setStage(JSON.parse(event.data))
                 console.log('Message from server ', event.data);
             });
@@ -262,7 +265,7 @@ const Payment: NextPage = () =>  {
                                 <Typography>{pid}</Typography>
                             </Grid>
                             <Grid item marginLeft={'auto'}>
-                                <CountdownTimer targetDate={stage?.body.ExpireTime || dateTimeAfterThreeDays} />
+                                {stage?.body.ExpireTime && <CountdownTimer targetDate={stage?.body.ExpireTime} />}
                             </Grid>
                         </Grid>
                     </Box>
