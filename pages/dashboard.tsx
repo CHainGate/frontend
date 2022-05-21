@@ -27,25 +27,25 @@ const Dashboard: NextPage = () => {
 
     data?.forEach((payment: LoggingInformationsResponseDto) => {
         payment.history?.forEach((history: PaymentHistory) => {
-            let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === history.pay_currency)?.conversion_factor
-            let pay_amount_big = new BigNumber(history.pay_amount)
-            let actually_paid_big = new BigNumber(history.actually_paid)
+            let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === history.payCurrency)?.conversionFactor
+            let pay_amount_big = new BigNumber(history.payAmount)
+            let actually_paid_big = new BigNumber(history.actuallyPaid)
             let factor_big = new BigNumber(factor || 1)
             let payAmount = factor ? pay_amount_big.div(factor_big) : new BigNumber(0)
             let actuallyPaid = factor ? actually_paid_big.div(factor_big) : new BigNumber(0)
             let row: LoggingRow = {
                 id: history.id,
-                paymentId: payment.payment_id,
-                priceAmount: history.price_amount,
-                priceCurrency: history.price_currency,
+                paymentId: payment.paymentId,
+                priceAmount: history.priceAmount,
+                priceCurrency: history.priceCurrency,
                 payAmount: payAmount,
-                payCurrency: history.pay_currency,
+                payCurrency: history.payCurrency,
                 actuallyPaid: actuallyPaid,
                 transaction: "transaction here",
-                state: history.payment_state,
-                createdAt:  new Date(payment.created_at),
-                updatedAt: new Date(payment.updated_at),
-                webhook: payment.callback_url,
+                state: history.paymentState,
+                createdAt:  new Date(payment.createdAt),
+                updatedAt: new Date(payment.updatedAt),
+                webhook: payment.callbackUrl,
             }
             rows.push(row);
         })

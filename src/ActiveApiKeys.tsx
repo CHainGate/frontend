@@ -4,11 +4,11 @@ import * as React from 'react';
 import { Button, CircularProgress } from '@mui/material';
 
 export default function ActiveApiKeys({keyType} : {keyType: "secret" | "public" }) {
-  const { data, isLoading, isError } = useGetApiKeyQuery({mode: 'test', keyType: keyType});
+  const { data, isLoading, isError } = useGetApiKeyQuery({mode: 'test'});
   const [ deleteApiKey, {} ] = useDeleteApiKeyMutation();
   const deleteApiKeyHandler = (id: string) => {
     const args: DeleteApiKeyApiArg = {
-      apiKeyId: id
+      id: id
     };
     deleteApiKey(args)
   }
@@ -17,7 +17,7 @@ export default function ActiveApiKeys({keyType} : {keyType: "secret" | "public" 
     <>
       {data &&
       <>
-        <div key={data.id}>{data.key} {data.key_type} {data.created_at}
+        <div key={data.id}>{data.key} {data.createdAt}
             <Button color="primary" variant="contained" onClick={() => deleteApiKeyHandler(data.id)} fullWidth>
                 delete key
             </Button>

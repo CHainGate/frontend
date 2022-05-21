@@ -225,7 +225,7 @@ const Payment: NextPage = () =>  {
     let body = <Grid container alignItems={"center"} justifyContent={"center"} flexDirection={'column'}><CircularProgress /></Grid>
 
     if(stage) {
-        let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === stage.body.Currency)?.conversion_factor
+        let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === stage.body.Currency)?.conversionFactor
         let pay_amount_big = new BigNumber(stage.body.PayAmount)
         let factor_big = new BigNumber(factor || 1)
         let payAmount = factor ? pay_amount_big.div(factor_big) : new BigNumber(0)

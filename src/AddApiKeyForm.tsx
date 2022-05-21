@@ -8,7 +8,6 @@ export default function AddApiKeyForm({keyType, buttonText} : {keyType: "secret"
   const createApiKey = () => {
     const arg: GenerateApiKeyApiArg = {
       apiKeyRequestDto: {
-        key_type: keyType,
         mode: "test"
       }
     }

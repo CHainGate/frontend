@@ -12,8 +12,8 @@ import Link from "next/link";
 
 const Register: NextPage = () => {
   const [formState, setFormState] = useState({
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
   });
@@ -32,8 +32,8 @@ const Register: NextPage = () => {
     try {
       const  registerArg: RegisterMerchantApiArg = {
         registerRequestDto: {
-          first_name: formState.first_name,
-          last_name: formState.last_name,
+          firstName: formState.firstName,
+          lastName: formState.lastName,
           email: formState.email,
           password: formState.password
         }
@@ -48,8 +48,8 @@ const Register: NextPage = () => {
   let content = (
     <>
       {error && <Box mb={2}><Alert severity="error">Registration fehlgeschlagen! Bitte überprüfen sie Ihre Eingaben.</Alert></Box>}
-      <TextField value={formState.first_name} id="first_name" name="first_name" label="First Name" type="text" fullWidth variant="standard" required onChange={handleChange} />
-      <TextField value={formState.last_name} id="last_name" name="last_name" label="Last Name" type="text" fullWidth variant="standard" required onChange={handleChange} />
+      <TextField value={formState.firstName} id="first_name" name="first_name" label="First Name" type="text" fullWidth variant="standard" required onChange={handleChange} />
+      <TextField value={formState.lastName} id="last_name" name="last_name" label="Last Name" type="text" fullWidth variant="standard" required onChange={handleChange} />
       <TextField value={formState.email} id="email" name="email" label="E-Mail" type="text" fullWidth variant="standard" required onChange={handleChange} />
       <TextField id="password" name="password" label="Password" type="password" fullWidth variant="standard" required onChange={handleChange} />
     </>
