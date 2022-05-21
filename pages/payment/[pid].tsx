@@ -45,7 +45,7 @@ const CountdownTimer = ({ targetDate }: any) => {
     const [days, hours, minutes, seconds] = useCountdown(targetDate);
 
     if (days + hours + minutes + seconds <= 0) {
-        return <ExpiredNotice />;
+        return <span>expired</span>;
     } else {
         return (
             <ShowCounter
@@ -58,7 +58,7 @@ const CountdownTimer = ({ targetDate }: any) => {
     }
 };
 
-const DateTimeDisplay = ({ value, type, isDanger }: any) => {
+const DateTimeDisplay = ({ value, isDanger }: any) => {
     return (
         <span className={isDanger ? 'countdown danger' : 'countdown'}>
             <span>{value}</span>
@@ -66,7 +66,7 @@ const DateTimeDisplay = ({ value, type, isDanger }: any) => {
     );
 };
 
-const ShowCounter = ({ days, hours, minutes, seconds }: any) => {
+const ShowCounter = ({ minutes, seconds }: any) => {
     return (
         <div className="show-counter">
             <DateTimeDisplay value={minutes} isDanger={false} />:
@@ -74,6 +74,113 @@ const ShowCounter = ({ days, hours, minutes, seconds }: any) => {
         </div>
     );
 };
+
+function CurrencySelection(props: { onSubmit: (event: { preventDefault: () => void }) => void, formValues: { currency: string }, onClickETH: () => void, onClickBTC: () => void }) {
+    return <Box>
+        <Typography variant="h4" gutterBottom marginBottom={3} textAlign={"center"}>
+            Choose your cryptocurrency...
+        </Typography>
+        <form onSubmit={props.onSubmit}>
+            <Grid container marginBottom={5}>
+                <Grid item xs={6}
+                      className={`${props.formValues.currency === "eth" ? styles.currencyselected : ""} ` + styles.currency}
+                      onClick={props.onClickETH}
+                      padding={2}
+                >
+                    <Box>
+                        <Image height={142} width={230} src={eth_logo} alt="Logo CHainGate" className="logo"/>
+                    </Box>
+                    <Box textAlign={"center"} marginTop={2} fontWeight={"bold"}>Ethereum</Box>
+                </Grid>
+                <Grid item xs={6}
+                      className={`${props.formValues.currency === "btc" ? styles.currencyselected : ""} ` + styles.currency}
+                      onClick={props.onClickBTC}
+                      padding={2}
+                >
+                    <Box>
+                        <Image height={142} width={230} src={btc_logo} alt="Logo CHainGate" className="logo"/>
+                    </Box>
+                    <Box textAlign={"center"} marginTop={2} fontWeight={"bold"}>Bitcoin</Box>
+                </Grid>
+            </Grid>
+            <Button fullWidth variant="contained" type="submit">Absenden</Button>
+        </form>
+    </Box>;
+}
+
+function Waiting(props: { payAmount: BigNumber, stage: SocketMessage }) {
+    return <Grid container alignItems={"center"} justifyContent={"center"} flexDirection={"column"}>
+        <Grid item className={styles.loader}/>
+        <Grid marginBottom={5}>
+            <Typography variant="h5">{props.payAmount.toString()} ETH</Typography>
+        </Grid>
+        <Grid width={"100%"}>
+            <TextField fullWidth label="address" variant="standard" value={props.stage.body.PayAddress}/>
+        </Grid>
+    </Grid>;
+}
+
+function Paid() {
+    return <div className={`${styles.loader} ${styles["load-complete"]}`}>
+        <div className={`${styles.checkmark} ${styles.draw}`}></div>
+    </div>;
+}
+
+function Confirmed() {
+    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"}>
+        <Box className={`${styles.loader} ${styles["load-complete"]}`}>
+            <div className={`${styles.checkmark} ${styles.draw}`}></div>
+            <Chip
+                className={styles.chip}
+                color="success"
+                label="confirmed"
+                deleteIcon={<DoneIcon/>}
+            />
+        </Box>
+    </Box>;
+}
+
+function Expired() {
+    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"}>
+        <Box className={`${styles.loader} ${styles["load-complete"]} ${styles.cross}`}>
+            <div className={`${styles.crossline} ${styles.crosslineleft} ${styles.draw}`}></div>
+            <div className={`${styles.crossline} ${styles.crosslineright} ${styles.draw}`}></div>
+            <Chip
+                className={styles.chip}
+                color="error"
+                label="expired"
+                deleteIcon={<DoneIcon/>}
+            />
+        </Box>
+    </Box>;
+}
+
+function PaymentPageContainer(props: { pid: string | string[] | undefined, stage: SocketMessage, body: JSX.Element }) {
+    return <React.Fragment>
+        <Grid className={styles.root} height={"100%"} container spacing={0} direction="column" alignItems="center"
+              justifyContent="center">
+            <Box className={styles.container} borderRadius={4} minWidth={"30vw"}>
+                <Box className={styles.paymentid} alignItems="center" p={2} borderRadius={"4px 4px 0px 0px"}>
+                    <Grid container alignItems={"center"}>
+                        <Grid item>
+                            <Typography>Payment ID</Typography>
+                            <Typography>{props.pid}</Typography>
+                        </Grid>
+                        <Grid item marginLeft={"auto"}>
+                            {props.stage?.body.ExpireTime &&
+                                <CountdownTimer targetDate={props.stage?.body.ExpireTime}/>}
+                        </Grid>
+                    </Grid>
+                </Box>
+                <Grid container className={styles.successCheckmark} p={2}>
+                    <Grid item xs={12} alignItems={"center"} justifyContent={"center"} display={"flex"}>
+                        {props.body}
+                    </Grid>
+                </Grid>
+            </Box>
+        </Grid>
+    </React.Fragment>;
+}
 
 const Payment: NextPage = () =>  {
     const router = useRouter()
@@ -84,11 +191,6 @@ const Payment: NextPage = () =>  {
     const [stage, setStage] = useState(initialStage);
 
     const {data: configData} = useGetConfigQuery({})
-
-    const THREE_DAYS_IN_MS = 15 * 60 * 1000;
-    const NOW_IN_MS = new Date().getTime();
-
-    const dateTimeAfterThreeDays = NOW_IN_MS + THREE_DAYS_IN_MS;
 
 // Call when updating the ws connection
     const updateWs = useCallback((url) => {
@@ -102,14 +204,6 @@ const Payment: NextPage = () =>  {
         const newWs = new WebSocket(url);
         setWsInstance(newWs);
     }, [wsInstance])
-
-    const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
-        const { name, value } = e.target;
-        setFormValues({
-            ...formValues,
-            [name]: value,
-        });
-    };
 
     const handleSelectCurrency = (currency: string) => {
         setFormValues({
@@ -142,91 +236,33 @@ const Payment: NextPage = () =>  {
                 break
             case "currency_selection":
                 body = (
-                    <Box>
-                        <Typography variant="h4" gutterBottom marginBottom={3} textAlign={'center'}>
-                            Choose your cryptocurrency...
-                        </Typography>
-                        <form onSubmit={handleSubmit}>
-                            <Grid container marginBottom={5}>
-                                <Grid item xs={6}
-                                      className={`${formValues.currency === 'eth' ? styles.currencyselected : ''} ` + styles.currency}
-                                      onClick={() => handleSelectCurrency('eth')}
-                                      padding={2}
-                                >
-                                    <Box>
-                                        <Image height={142} width={230} src={eth_logo} alt="Logo CHainGate" className="logo" />
-                                    </Box>
-                                    <Box textAlign={'center'} marginTop={2} fontWeight={'bold'}>Ethereum</Box>
-                                </Grid >
-                                <Grid item xs={6}
-                                      className={`${formValues.currency === 'btc' ? styles.currencyselected : ''} ` + styles.currency}
-                                      onClick={() => handleSelectCurrency('btc')}
-                                      padding={2}
-                                >
-                                    <Box>
-                                        <Image height={142} width={230} src={btc_logo} alt="Logo CHainGate" className="logo" />
-                                    </Box>
-                                    <Box textAlign={'center'} marginTop={2} fontWeight={'bold'}>Bitcoin</Box>
-                                </Grid >
-                            </Grid>
-                            <Button fullWidth variant="contained" type="submit">Absenden</Button>
-                        </form>
-                    </Box>
+                    <CurrencySelection onSubmit={handleSubmit} formValues={formValues}
+                                       onClickETH={() => handleSelectCurrency('eth')}
+                                       onClickBTC={() => handleSelectCurrency('btc')}/>
             )
                 break
             case "partially_paid":
             case "waiting":
                 body = (
-                    <Grid container alignItems={"center"} justifyContent={"center"} flexDirection={'column'}>
-                        <Grid item className={styles.loader} />
-                        <Grid marginBottom={5}>
-                            <Typography variant="h5">{payAmount.toString()} ETH</Typography>
-                        </Grid>
-                        <Grid width={'100%'}>
-                            <TextField fullWidth label="Adresse" variant="standard" value={stage.body.PayAddress} />
-                        </Grid>
-                    </Grid>
+                    <Waiting payAmount={payAmount} stage={stage}/>
                 )
                 break
             case "paid":
                 body = (
                     // https://codepen.io/scottloway/pen/zqoLyQ
-                    <div className={`${styles.loader} ${styles["load-complete"]}`}>
-                        <div className={`${styles.checkmark} ${styles.draw}`}></div>
-                    </div>
+                    <Paid/>
                 )
                 break
             case "confirmed":
             case "forwarded":
             case "finished":
                 body = (
-                    <Box alignItems={"center"} justifyContent={"center"} display={'flex'}>
-                        <Box className={`${styles.loader} ${styles["load-complete"]}`} >
-                            <div className={`${styles.checkmark} ${styles.draw}`}></div>
-                            <Chip
-                                className={styles.chip}
-                                color="success"
-                                label="confirmed"
-                                deleteIcon={<DoneIcon />}
-                            />
-                        </Box>
-                    </Box>
+                    <Confirmed/>
                 )
                 break
             case "expired":
                 body = (
-                    <Box alignItems={"center"} justifyContent={"center"} display={'flex'}>
-                        <Box className={`${styles.loader} ${styles["load-complete"]} ${styles.cross}`}>
-                            <div className={`${styles.crossline} ${styles.crosslineleft} ${styles.draw}`}></div>
-                            <div className={`${styles.crossline} ${styles.crosslineright} ${styles.draw}`}></div>
-                            <Chip
-                                className={styles.chip}
-                                color="error"
-                                label="expired"
-                                deleteIcon={<DoneIcon />}
-                            />
-                        </Box>
-                    </Box>
+                    <Expired/>
                 )
                 break
             default:
@@ -255,28 +291,7 @@ const Payment: NextPage = () =>  {
     }, [pid])
 
     return (
-        <React.Fragment>
-            <Grid className={styles.root} height={'100%'} container spacing={0} direction="column" alignItems="center" justifyContent="center">
-                <Box className={styles.container} borderRadius={4} minWidth={'30vw'}>
-                    <Box className={styles.paymentid} alignItems='center' p={2} borderRadius={'4px 4px 0px 0px'}>
-                        <Grid container alignItems={'center'}>
-                            <Grid item>
-                                <Typography>Payment ID</Typography>
-                                <Typography>{pid}</Typography>
-                            </Grid>
-                            <Grid item marginLeft={'auto'}>
-                                {stage?.body.ExpireTime && <CountdownTimer targetDate={stage?.body.ExpireTime} />}
-                            </Grid>
-                        </Grid>
-                    </Box>
-                    <Grid container className={styles.successCheckmark} p={2}>
-                        <Grid item xs={12} alignItems={"center"} justifyContent={"center"} display={'flex'}>
-                            {body}
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
-        </React.Fragment>
+        <PaymentPageContainer pid={pid} stage={stage} body={body}/>
     );
 }
 
