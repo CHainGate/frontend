@@ -8,11 +8,11 @@ import Box from '@mui/material/Box';
 const VerifyEmail: NextPage = () => {
   const router = useRouter();
   const email = router.query.email as string;
-  const verificationCode = router.query.code as string;
+  const code = router.query.code as string;
 
   const args: VerifyEmailApiArg = {
       email,
-      verificationCode: parseInt(verificationCode, 10)
+      code: parseInt(code, 10)
     }
 
   const { isLoading, isError} = useVerifyEmailQuery(args)

@@ -8,7 +8,7 @@ export default function ActiveWallets({wallets}: {wallets: WalletResponseDto[] |
   const [deleteWallet, { isLoading, error }] = useDeleteWalletMutation()
   const handleDelete = (id: string): void => {
     const arg: DeleteWalletApiArg = {
-      walletId: id
+      id: id
     }
     deleteWallet(arg).unwrap()
   }
