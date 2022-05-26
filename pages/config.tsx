@@ -8,11 +8,13 @@ import { useGetConfigQuery, useGetWalletsQuery } from '../api/chaingate.api';
 import { GetWalletsApiArg } from '../api/chaingate.generated';
 import AddApiKeyForm from '../src/AddApiKeyForm';
 import ActiveApiKeys from '../src/ActiveApiKeys';
+import { useAppSelector } from '../lib/hooks';
 
 const Configuration: NextPage = () => {
+  const mode = useAppSelector((state) => state.internal.mode.mode);
   const { data: config, isError: isErrorConfig } = useGetConfigQuery({})
   const arg: GetWalletsApiArg = {
-    mode: "test"
+    mode
   }
   const { data: wallets, isError: isErrorWallet } = useGetWalletsQuery(arg)
 

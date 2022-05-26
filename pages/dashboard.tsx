@@ -4,6 +4,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useGetLoggingInformationQuery } from '../api/chaingate.api';
 import {LoggingInformationsResponseDto, PaymentHistory, useGetConfigQuery} from '../api/chaingate.generated';
 import BigNumber from "bignumber.js";
+import { useAppSelector } from '../lib/hooks';
 
 interface LoggingRow {
     id: string;
@@ -21,7 +22,8 @@ interface LoggingRow {
 }
 
 const Dashboard: NextPage = () => {
-    const { data } = useGetLoggingInformationQuery({mode: "test"})
+    const mode = useAppSelector((state) => state.internal.mode.mode);
+    const { data } = useGetLoggingInformationQuery({ mode })
     const {data: configData} = useGetConfigQuery({})
     let rows: LoggingRow[] = [];
 

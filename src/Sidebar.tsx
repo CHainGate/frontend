@@ -88,7 +88,7 @@ export default function Sidebar() {
     const classes: ClassNameMap = useStyles();
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    const currentUser: AuthInfo = useAppSelector((state) => state.authInfo);
+    const currentUser: AuthInfo = useAppSelector((state) => state.internal.authInfo);
 
     const handleSignout = () => {
         dispatch(clearUser());

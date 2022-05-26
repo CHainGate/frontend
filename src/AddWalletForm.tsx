@@ -3,8 +3,10 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useAddWalletMutation } from '../api/chaingate.api';
 import { AddWalletApiArg, Currency } from '../api/chaingate.generated';
+import { useAppSelector } from '../lib/hooks';
 
 export default function AddWalletForm({options}: {options: Currency[]}) {
+  const mode = useAppSelector((state) => state.internal.mode.mode);
   const [selectedCurrency, setSelectedCurrency] = useState('')
   const [newPayoutWallet, setNewPayoutWallet] = useState('')
 
@@ -25,7 +27,7 @@ export default function AddWalletForm({options}: {options: Currency[]}) {
         walletRequestDto: {
           currency: selectedCurrency as "eth" | "btc",
           address: newPayoutWallet,
-          mode: "test",
+          mode,
         }
       }
       addWallet(walletArg).unwrap()
