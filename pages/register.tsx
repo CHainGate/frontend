@@ -48,8 +48,8 @@ const Register: NextPage = () => {
   let content = (
     <>
       {error && <Box mb={2}><Alert severity="error">Registration fehlgeschlagen! Bitte überprüfen sie Ihre Eingaben.</Alert></Box>}
-      <TextField value={formState.firstName} id="first_name" name="first_name" label="First Name" type="text" fullWidth variant="standard" required onChange={handleChange} />
-      <TextField value={formState.lastName} id="last_name" name="last_name" label="Last Name" type="text" fullWidth variant="standard" required onChange={handleChange} />
+      <TextField value={formState.firstName} id="firstName" name="firstName" label="First Name" type="text" fullWidth variant="standard" required onChange={handleChange} />
+      <TextField value={formState.lastName} id="lastName" name="lastName" label="Last Name" type="text" fullWidth variant="standard" required onChange={handleChange} />
       <TextField value={formState.email} id="email" name="email" label="E-Mail" type="text" fullWidth variant="standard" required onChange={handleChange} />
       <TextField id="password" name="password" label="Password" type="password" fullWidth variant="standard" required onChange={handleChange} />
     </>
