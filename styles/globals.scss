@@ -1,0 +1,66 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+html,
+body,
+#__next {
+  height: 100%;
+  width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.MuiDataGrid-root .MuiDataGrid-main{
+  .data-grid--finished {
+    background: rgba(0, 0, 28, 1);
+    color: #fff;
+  }
+
+  .data-grid--forwarded {
+    background: rgba(0, 0, 28, 0.95);
+    color: #fff;
+  }
+
+  .data-grid--confirmed {
+    background: rgba(0, 0, 28, 0.9);
+    color: #fff;
+  }
+
+  .data-grid--paid  {
+    background: rgba(0, 0, 28, 0.85);
+    color: #fff;
+  }
+
+  .data-grid--waiting{
+    background: rgba(0, 0, 28, 0.8);
+    color: #fff;
+  }
+
+  .data-grid--currency_selection {
+    background: rgba(0, 0, 28, 0.75);
+    color: #fff;
+  }
+
+  .data-grid--expired {
+    background: rgba(56, 0, 28, 1);
+    color: #fff;
+  }
+
+  .data-grid--failed {
+    background: rgba(80, 0, 28, 1);
+    color: #fff;
+  }
+}
+

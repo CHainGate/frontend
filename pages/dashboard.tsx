@@ -129,13 +129,13 @@ const Dashboard: NextPage = () => {
         { field: 'id', headerName: 'ID', width: 150},
         { field: 'paymentId', headerName: 'Payment ID', width: 300 },
         { field: 'updatedAt', headerName: 'Updated at', type: "dateTime", width: 160 },
-        { field: 'priceAmount', headerName: 'Price Amount', width: 130 },
-        { field: 'priceCurrency', headerName: 'Price Currency', width: 130 },
+        { field: 'priceAmount', headerName: 'Amount', width: 100 },
+        { field: 'priceCurrency', headerName: 'Fiat', width: 90 },
         { field: 'payAmount', headerName: 'Pay Amount', width: 130 },
-        { field: 'payCurrency', headerName: 'Pay Currency', width: 130 },
-        { field: 'actuallyPaid', headerName: 'Actually Paid', width: 130 },
+        { field: 'payCurrency', headerName: 'Currency', width: 100 },
+        { field: 'actuallyPaid', headerName: 'Paid', width: 100 },
         { field: 'transaction', headerName: 'Transaction', width: 160 },
-        { field: 'state', headerName: 'State', width: 160 },
+        { field: 'state', headerName: 'State', width: 100 },
         { field: 'webhook', headerName: 'Webhook', width: 160 },
         { field: 'createdAt', headerName: 'Created at', type: "dateTime", width: 160 },
     ];
@@ -152,7 +152,9 @@ const Dashboard: NextPage = () => {
               columns={columns}
               pageSize={10}
               rowsPerPageOptions={[5]}
+              disableSelectionOnClick
               onCellClick={onEvent}
+              getRowClassName={(params) => `data-grid--${params.row.state}`}
               initialState={{
                   sorting: {
                       sortModel: [{ field: 'updatedAt', sort: 'desc' }],
