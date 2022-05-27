@@ -70,8 +70,8 @@ const Dashboard: NextPage = () => {
                 actuallyPaid: actuallyPaid,
                 transaction: "transaction here",
                 state: history.paymentState,
-                createdAt:  new Date(payment.createdAt),
-                updatedAt: new Date(payment.updatedAt),
+                createdAt: new Date(history.createdAt),
+                updatedAt: new Date(history.createdAt),
                 webhook: payment.callbackUrl,
                 payment: payment
             }
@@ -118,7 +118,6 @@ const Dashboard: NextPage = () => {
                         </div>
                     )
                 }
-
 
                 return (
                     <div className="d-flex justify-content-between align-items-center" style={{ cursor: "pointer" }}>
