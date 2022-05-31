@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { NextPage } from 'next';
-import {DataGrid, GridColDef, GridEventListener} from '@mui/x-data-grid';
+import {DataGrid, GridColDef, GridEventListener, GridRenderCellParams} from '@mui/x-data-grid';
 import { useGetLoggingInformationQuery } from '../api/chaingate.api';
 import {LoggingInformationsResponseDto, PaymentHistory, useGetConfigQuery} from '../api/chaingate.generated';
 import MoveUpIcon from '@mui/icons-material/MoveUp';
@@ -11,6 +11,7 @@ import {useState} from "react";
 interface LoggingRow {
     id: string;
     paymentId: string;
+    mode: string;
     priceAmount: number;
     priceCurrency: string;
     payAmount: BigNumber;
@@ -23,12 +24,32 @@ interface LoggingRow {
     webhook: string;
 }
 
+function getBlockExplorerURL(params: GridRenderCellParams) {
+    let hash = params.value
+    let mode = params.row.mode
+    if(params.row.payCurrency == 'eth') {
+        if (mode == 'test') {
+            return `https://rinkeby.etherscan.io/tx/` + hash
+        } else {
+            return `https://etherscan.io/tx/` + hash
+        }
+    } else {
+        if (mode == 'test') {
+            return `https://www.blockchain.com/btc-testnet/tx/` + hash
+        } else {
+            return `https://www.blockchain.com/btc/tx/` + hash
+        }
+    }
+
+}
+
 type MainRowType = LoggingRow & {payment: LoggingInformationsResponseDto}
 
 const Dashboard: NextPage = () => {
     let initialPayment: LoggingInformationsResponseDto = {
         callbackUrl: "",
         createdAt: "",
+        mode: "main",
         history: [],
         paymentId: "",
         updatedAt: ""
@@ -52,6 +73,7 @@ const Dashboard: NextPage = () => {
         }
     }
 
+    let columns: GridColDef[]
     if (payment.paymentId) {
         payment.history?.forEach((history: PaymentHistory) => {
             let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === history.payCurrency)?.conversionFactor
@@ -63,12 +85,13 @@ const Dashboard: NextPage = () => {
             let row: MainRowType = {
                 id: history.id,
                 paymentId: payment.paymentId,
+                mode: payment.mode,
                 priceAmount: history.priceAmount,
                 priceCurrency: history.priceCurrency,
                 payAmount: payAmount,
                 payCurrency: history.payCurrency,
                 actuallyPaid: actuallyPaid,
-                transaction: "transaction here",
+                transaction: payment.transaction || "",
                 state: history.paymentState,
                 createdAt: new Date(history.createdAt),
                 updatedAt: new Date(history.createdAt),
@@ -77,6 +100,36 @@ const Dashboard: NextPage = () => {
             }
             rows.push(row);
         })
+
+        columns = [
+            {
+                field: "actions",
+                headerName: "",
+                sortable: false,
+                width: 10,
+                renderCell: () => {
+                    if (!payment.paymentId){
+                        return (
+                            <div className="d-flex justify-content-between align-items-center" style={{ cursor: "pointer" }}>
+                                <MoveDownIcon />
+                            </div>
+                        )
+                    }
+
+                    return (
+                        <div className="d-flex justify-content-between align-items-center" style={{ cursor: "pointer" }}>
+                            <MoveUpIcon />
+                        </div>
+                    );
+                }
+            },
+            { field: 'id', headerName: 'ID', width: 150},
+            { field: 'paymentId', headerName: 'Payment ID', width: 300 },
+            { field: 'createdAt', headerName: 'Created at', type: "dateTime", width: 160 },
+            { field: 'payAmount', headerName: 'Pay Amount', width: 150 },
+            { field: 'actuallyPaid', headerName: 'Paid', width: 100 },
+            { field: 'state', headerName: 'State', width: 150 },
+        ];
     } else {
         data?.forEach((payment: LoggingInformationsResponseDto) => {
             let history = payment.history[0]
@@ -89,12 +142,13 @@ const Dashboard: NextPage = () => {
             let row: MainRowType = {
                 id: history.id,
                 paymentId: payment.paymentId,
+                mode: payment.mode,
                 priceAmount: history.priceAmount,
                 priceCurrency: history.priceCurrency,
                 payAmount: payAmount,
                 payCurrency: history.payCurrency,
                 actuallyPaid: actuallyPaid,
-                transaction: "transaction here",
+                transaction: payment.transaction || "",
                 state: history.paymentState,
                 createdAt:  new Date(payment.createdAt),
                 updatedAt: new Date(payment.updatedAt),
@@ -103,42 +157,45 @@ const Dashboard: NextPage = () => {
             }
             rows.push(row);
         })
-    }
-    let columns: GridColDef[] = [
-        {
-            field: "actions",
-            headerName: "",
-            sortable: false,
-            width: 10,
-            renderCell: () => {
-                if (!payment.paymentId){
+        columns = [
+            {
+                field: "actions",
+                headerName: "",
+                sortable: false,
+                width: 10,
+                renderCell: () => {
+                    if (!payment.paymentId){
+                        return (
+                            <div className="d-flex justify-content-between align-items-center" style={{ cursor: "pointer" }}>
+                                <MoveDownIcon />
+                            </div>
+                        )
+                    }
+
                     return (
                         <div className="d-flex justify-content-between align-items-center" style={{ cursor: "pointer" }}>
-                            <MoveDownIcon />
+                            <MoveUpIcon />
                         </div>
-                    )
+                    );
                 }
-
-                return (
-                    <div className="d-flex justify-content-between align-items-center" style={{ cursor: "pointer" }}>
-                        <MoveUpIcon />
-                    </div>
-                );
-            }
-        },
-        { field: 'id', headerName: 'ID', width: 150},
-        { field: 'paymentId', headerName: 'Payment ID', width: 300 },
-        { field: 'updatedAt', headerName: 'Updated at', type: "dateTime", width: 160 },
-        { field: 'priceAmount', headerName: 'Amount', width: 100 },
-        { field: 'priceCurrency', headerName: 'Fiat', width: 90 },
-        { field: 'payAmount', headerName: 'Pay Amount', width: 130 },
-        { field: 'payCurrency', headerName: 'Currency', width: 100 },
-        { field: 'actuallyPaid', headerName: 'Paid', width: 100 },
-        { field: 'transaction', headerName: 'Transaction', width: 160 },
-        { field: 'state', headerName: 'State', width: 100 },
-        { field: 'webhook', headerName: 'Webhook', width: 160 },
-        { field: 'createdAt', headerName: 'Created at', type: "dateTime", width: 160 },
-    ];
+            },
+            { field: 'id', headerName: 'ID', width: 150},
+            { field: 'paymentId', headerName: 'Payment ID', width: 300 },
+            { field: 'mode', headerName: 'Mode', width: 80 },
+            { field: 'updatedAt', headerName: 'Updated at', type: "dateTime", width: 160 },
+            { field: 'priceAmount', headerName: 'Amount', width: 100, align: "right" },
+            { field: 'priceCurrency', headerName: 'Fiat', width: 90 },
+            { field: 'payAmount', headerName: 'Pay Amount', width: 130},
+            { field: 'payCurrency', headerName: 'Currency', width: 100 },
+            { field: 'actuallyPaid', headerName: 'Paid', width: 100 },
+            { field: 'transaction', headerName: 'Transaction', width: 160, renderCell: (params) => (
+                <a href={getBlockExplorerURL(params)} style={{ overflow: "hidden", textOverflow: "ellipsis"}}>{params.value}</a>
+            ) },
+            { field: 'state', headerName: 'State', width: 100 },
+            { field: 'webhook', headerName: 'Webhook', width: 160 },
+            { field: 'createdAt', headerName: 'Created at', type: "dateTime", width: 160 },
+        ];
+    }
 
     let celltsToHide = {
         id: false,
