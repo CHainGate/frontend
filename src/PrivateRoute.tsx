@@ -33,7 +33,7 @@ function updateStore(token: string, dispatch: AppDispatch) {
 export default function PrivateRoute({ children }: any) {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const authInfo = useAppSelector((state) => state.authInfo);
+  const authInfo = useAppSelector((state) => state.internal.authInfo);
   const openPages = ['/login', '/register', '/verifyemail', '/payment'];
   const paymentPage = '/payment/';
 

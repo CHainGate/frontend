@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { combineReducers, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import jwt_decode from 'jwt-decode';
+import { chaingateApi } from '../baseApi';
 
 export type JWTTokenData = {
     name: string,
@@ -18,12 +19,20 @@ export type AuthInfo = {
     isAuthenticated: boolean;
 };
 
+export type Mode = {
+    mode: "main" | "test";
+};
+
 const initialState: AuthInfo = {
     username: '',
     userid: 0,
     token: '',
     roles: '',
     isAuthenticated: false,
+}
+
+const mode: Mode = {
+    mode: "main"
 }
 
 const userSlice = createSlice({
@@ -46,11 +55,37 @@ const userSlice = createSlice({
     },
 });
 
+const modeSlice = createSlice({
+    name: 'mode',
+    initialState: mode,
+    reducers: {
+        changeMode: (state) => {
+            let newMode: "test" | "main";
+            if (state.mode === "test") {
+                newMode = "main";
+            } else {
+                newMode = "test";
+            }
+            state.mode = newMode;
+        },
+    },
+});
+
+const reducer = combineReducers({
+    authInfo: userSlice.reducer,
+    mode: modeSlice.reducer
+});
+
+
 export const {
     setCredentials,
     clearUser,
 } = userSlice.actions;
 
-export default userSlice.reducer;
+export const {
+    changeMode,
+} = modeSlice.actions;
+
+export default reducer;
 
 

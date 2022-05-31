@@ -21,7 +21,7 @@ const clientSideEmotionCache = createEmotionCache();
 
 function App(props : any) {
     const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-    const authInfo = useAppSelector((state) => state.authInfo);
+    const authInfo = useAppSelector((state) => state.internal.authInfo);
     const router = useRouter()
 
     let comp;

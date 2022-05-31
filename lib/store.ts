@@ -1,11 +1,11 @@
 import {Action, combineReducers, configureStore} from "@reduxjs/toolkit";
 import { createWrapper } from "next-redux-wrapper";
 import { chaingateApi } from "./baseApi";
-import authInfoReducer, {clearUser} from './authInfo/reducers';
+import internalReducer, {clearUser} from './authInfo/reducers';
 
 
 const appReducer = combineReducers({
-    authInfo: authInfoReducer,
+    internal: internalReducer,
     [chaingateApi.reducerPath]: chaingateApi.reducer,
 });
 

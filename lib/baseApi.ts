@@ -13,7 +13,7 @@ const dynamicBaseQuery: BaseQueryFn <string | FetchArgs, unknown, FetchBaseQuery
     const rawBaseQuery = fetchBaseQuery({
       baseUrl,
       prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as RootState).authInfo.token ? localStorage.getItem('token') : null
+        const token = (getState() as RootState).internal.authInfo.token ? localStorage.getItem('token') : null
         if (token) {
           headers.set('authorization', `Bearer ${token}`)
         }

@@ -6,6 +6,7 @@ import {LoggingInformationsResponseDto, PaymentHistory, useGetConfigQuery} from 
 import MoveUpIcon from '@mui/icons-material/MoveUp';
 import MoveDownIcon from '@mui/icons-material/MoveDown';
 import BigNumber from "bignumber.js";
+import { useAppSelector } from '../lib/hooks';
 import {useState} from "react";
 
 interface LoggingRow {
@@ -26,6 +27,7 @@ interface LoggingRow {
 type MainRowType = LoggingRow & {payment: LoggingInformationsResponseDto}
 
 const Dashboard: NextPage = () => {
+    const mode = useAppSelector((state) => state.internal.mode.mode);
     let initialPayment: LoggingInformationsResponseDto = {
         callbackUrl: "",
         createdAt: "",
@@ -34,7 +36,7 @@ const Dashboard: NextPage = () => {
         updatedAt: ""
     }
     const [payment, setPayment] = useState(initialPayment);
-    const { data, isLoading } = useGetLoggingInformationQuery({mode: "test"})
+    const { data, isLoading } = useGetLoggingInformationQuery({mode})
     const {data: configData} = useGetConfigQuery({})
     let rows: LoggingRow[] = [];
 
