@@ -13,7 +13,7 @@ export default function SwitchMode() {
 
   return (
     <>
-      Switch Mode
+      Mainnet
       <Switch
         checked={mode === "main"}
         onChange={handleChange}/>

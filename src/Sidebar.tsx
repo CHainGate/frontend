@@ -8,7 +8,7 @@ import {
     ListItemText
 } from "@mui/material";
 import createStyles from "@mui/styles/createStyles";
-import {Theme} from "@mui/system";
+import {color, Theme} from "@mui/system";
 import {useAppDispatch, useAppSelector} from "../lib/hooks";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -23,6 +23,8 @@ import {useRouter} from "next/router";
 import makeStyles from '@mui/styles/makeStyles';
 import Image from 'next/image'
 import {ClassNameMap} from "@mui/styles";
+import SwitchMode from "./SwitchMode";
+import Box from "@mui/material/Box";
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -119,12 +121,12 @@ export default function Sidebar() {
                 <Image height={142} width={230} src={logo} alt="Logo CHainGate" className="logo" />
             </div>
             <Divider />
-            <List className={classes.userItem}>
+            <List className={classes.userItem} style={{color: 'white'}}>
                 <ListItem>
                     <ListItemIcon>
-                        <AccountCircleIcon />
+                        <AccountCircleIcon style={{ color: 'white' }} />
                     </ListItemIcon>
-                    <ListItemText primary={currentUser.username} />
+                    <ListItemText style={{overflow: 'hidden', textOverflow: "ellipsis"}}  primary={currentUser.username} />
                 </ListItem>
             </List>
             <Divider />
@@ -154,6 +156,13 @@ export default function Sidebar() {
                     </ListItem>
                 ))}
             </List>
+            <Box position='absolute' bottom={0}>
+                <List>
+                    <ListItem>
+                        <SwitchMode/>
+                    </ListItem>
+                </List>
+            </Box>
         </div>
     );
 
