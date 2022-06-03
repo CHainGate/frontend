@@ -2,12 +2,8 @@ import * as React from 'react';
 import type { NextPage } from 'next';
 import {
     Button,
-    Chip, CircularProgress, Divider,
-    FormControl,
-    FormControlLabel,
-    FormLabel,
-    Grid, Radio, RadioGroup,
-    TextField,
+    Chip, CircularProgress,
+    Grid, IconButton, InputAdornment, OutlinedInput,
     Typography
 } from '@mui/material';
 import {useRouter} from "next/router";
@@ -19,16 +15,22 @@ import eth_logo from '../../public/ethereum.svg';
 import styles from "../../styles/Payment.module.scss"
 import Box from "@mui/material/Box";
 import Image from "next/image";
-import logo from "../../public/CHainGate_inverted.svg";
 import {useCountdown} from "../../src/Countdown";
 import {useGetConfigQuery} from "../../api/chaingate.generated";
 import BigNumber from "bignumber.js";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 export const isBrowser = typeof window !== "undefined";
 
 type SocketMessage = {
     messageType: string
-    body: any
+    body: {
+        currency:   string
+        payAddress: string
+        payAmount:  string
+        expireTime: string
+        mode: 	    string
+    }
 }
 
 
@@ -75,6 +77,10 @@ const ShowCounter = ({ minutes, seconds }: any) => {
     );
 };
 
+const handleClickToClipboard = (address: string) => {
+    navigator.clipboard.writeText(address)
+};
+
 function CurrencySelection(props: { onSubmit: (event: { preventDefault: () => void }) => void, formValues: { currency: string }, onClickETH: () => void, onClickBTC: () => void }) {
     return <Box>
         <Typography variant="h4" gutterBottom marginBottom={3} textAlign={"center"}>
@@ -108,18 +114,47 @@ function CurrencySelection(props: { onSubmit: (event: { preventDefault: () => vo
     </Box>;
 }
 
-function Waiting(props: { payAmount: BigNumber, stage: SocketMessage }) {
+function Waiting(props: { payAmount: BigNumber, stage: SocketMessage}) {
     return <Grid container alignItems={"center"} justifyContent={"center"} flexDirection={"column"}>
         <Grid item className={styles.loader}/>
-        <Grid marginBottom={5}>
-            <Typography variant="h5">{props.payAmount.toString()} ETH</Typography>
+        <Grid item marginBottom={5}>
+            <Typography variant="h5">{props.payAmount.toString()} {props.stage.body.currency.toUpperCase()}</Typography>
         </Grid>
-        <Grid width={"100%"}>
-            <TextField fullWidth label="address" variant="standard" value={props.stage.body.PayAddress}/>
+        <Grid item width={"100%"}>
+            <OutlinedInput fullWidth label="address" value={props.stage.body.payAddress} endAdornment={
+                <InputAdornment position="end">
+                    <IconButton onClick={() => handleClickToClipboard(props.stage.body.payAddress)}>
+                        {<ContentCopyIcon />}
+                    </IconButton>
+                </InputAdornment>
+            }/>
+        </Grid>
+        <Grid item marginTop={2} textAlign='center'>
+            <em>You <a href={getBlockExplorerURL(props.stage.body.payAddress, props.stage.body.currency, props.stage.body.mode)}>sent</a> your money and it recognizes it?</em>
+            <br />
+            <em>Please stay calm it gets rechecked before it expires.</em>
+        </Grid>
+        <Grid item>
+            <a style={{textDecoration: 'underline'}} target='_blank' href={getBlockExplorerURL(props.stage.body.payAddress, props.stage.body.currency, props.stage.body.mode)} rel="noreferrer">(Check Block Explorer)</a>
         </Grid>
     </Grid>;
 }
 
+function getBlockExplorerURL(address: string, currency: string,  mode: string) {
+    if(currency == 'eth') {
+        if (mode == 'test') {
+            return `https://rinkeby.etherscan.io/address/` + address
+        } else {
+            return `https://etherscan.io/address/` + address
+        }
+    } else {
+        if (mode == 'test') {
+            return `https://www.blockchain.com/btc-testnet/address/` + address
+        } else {
+            return `https://www.blockchain.com/btc/address/` + address
+        }
+    }
+}
 function Paid() {
     return <div className={`${styles.loader} ${styles["load-complete"]}`}>
         <div className={`${styles.checkmark} ${styles.draw}`}></div>
@@ -156,6 +191,20 @@ function Expired() {
 }
 
 function PaymentPageContainer(props: { pid: string | string[] | undefined, stage: SocketMessage, body: JSX.Element }) {
+    const [days, hours, minutes, seconds] = useCountdown(props.stage?.body.expireTime);
+
+    let content
+    if (days + hours + minutes + seconds <= 0) {
+        content = (
+            <Box display='flex' flexDirection='column' alignItems='center'>
+                <h3>Please don&apos;t send any money anymore because the payment will soon expire!</h3>
+                <span>It will expire as soon as the next block gets mined.</span>
+            </Box>
+        )
+    } else {
+        content = props.body
+    }
+
     return <React.Fragment>
         <Grid className={styles.root} height={"100%"} container spacing={0} direction="column" alignItems="center"
               justifyContent="center">
@@ -167,14 +216,14 @@ function PaymentPageContainer(props: { pid: string | string[] | undefined, stage
                             <Typography>{props.pid}</Typography>
                         </Grid>
                         <Grid item marginLeft={"auto"}>
-                            {props.stage?.body.ExpireTime &&
-                                <CountdownTimer targetDate={props.stage?.body.ExpireTime}/>}
+                            {props.stage?.body.expireTime &&
+                                <CountdownTimer targetDate={props.stage?.body.expireTime}/>}
                         </Grid>
                     </Grid>
                 </Box>
                 <Grid container className={styles.successCheckmark} p={2}>
                     <Grid item xs={12} alignItems={"center"} justifyContent={"center"} display={"flex"}>
-                        {props.body}
+                        {content}
                     </Grid>
                 </Grid>
             </Box>
@@ -185,7 +234,7 @@ function PaymentPageContainer(props: { pid: string | string[] | undefined, stage
 const Payment: NextPage = () =>  {
     const router = useRouter()
     const { pid } = router.query
-    const initialStage: SocketMessage = {messageType: "loading", body: {}}
+    const initialStage: SocketMessage = {messageType: "loading", body: {currency: "", mode:"", payAddress: "", payAmount: "", expireTime: ""}}
     const [formValues, setFormValues] = useState({currency: ''})
     const [wsInstance, setWsInstance] = useState(null as unknown as WebSocket | null);
     const [stage, setStage] = useState(initialStage);
@@ -214,9 +263,10 @@ const Payment: NextPage = () =>  {
 
     const handleSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
-        console.log(formValues);
+
         const currencySelection: SocketMessage = {
             messageType: 'currency-selection',
+            // @ts-ignore
             body: formValues
         }
         wsInstance?.send(JSON.stringify(currencySelection))
@@ -225,8 +275,8 @@ const Payment: NextPage = () =>  {
     let body = <Grid container alignItems={"center"} justifyContent={"center"} flexDirection={'column'}><CircularProgress /></Grid>
 
     if(stage) {
-        let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === stage.body.Currency)?.conversionFactor
-        let pay_amount_big = new BigNumber(stage.body.PayAmount)
+        let factor = configData?.supportedCryptoCurrencies?.find(c => c.shortName === stage.body.currency)?.conversionFactor
+        let pay_amount_big = new BigNumber(stage.body.payAmount)
         let factor_big = new BigNumber(factor || 1)
         let payAmount = factor ? pay_amount_big.div(factor_big) : new BigNumber(0)
 
@@ -244,7 +294,7 @@ const Payment: NextPage = () =>  {
             case "partially_paid":
             case "waiting":
                 body = (
-                    <Waiting payAmount={payAmount} stage={stage}/>
+                    <Waiting payAmount={payAmount} stage={stage} />
                 )
                 break
             case "paid":

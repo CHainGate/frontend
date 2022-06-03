@@ -21,7 +21,6 @@ const Configuration: NextPage = () => {
   const options = config?.supportedCryptoCurrencies?.filter(currency => !wallets?.find(wallet => wallet.currency === currency.shortName)) || []
     return (
         <Container maxWidth="sm">
-          <SwitchMode/>
           <h1>Configuration</h1>
 
           {options.length > 0 && <AddWalletForm options={options}/>}
