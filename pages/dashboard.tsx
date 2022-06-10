@@ -8,6 +8,7 @@ import MoveDownIcon from '@mui/icons-material/MoveDown';
 import BigNumber from "bignumber.js";
 import { useAppSelector } from '../lib/hooks';
 import {useState} from "react";
+import Head from "next/head";
 
 interface LoggingRow {
     id: string;
@@ -205,6 +206,10 @@ const Dashboard: NextPage = () => {
 
     return (
       <>
+          <Head>
+              <title>Dashboard</title>
+              <meta property="og:title" content="Dashboard" key="title" />
+          </Head>
           <div style={{ marginLeft: 300, height: 800, width: '80%' }}>
           <DataGrid sx={{minWidth: 850}}
               rows={rows}

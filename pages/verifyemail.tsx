@@ -4,6 +4,7 @@ import { useVerifyEmailQuery, VerifyEmailApiArg } from '../api/chaingate.generat
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import Box from '@mui/material/Box';
+import Head from "next/head";
 
 const VerifyEmail: NextPage = () => {
   const router = useRouter();
@@ -31,6 +32,10 @@ const VerifyEmail: NextPage = () => {
   }
   return (
     <Container>
+      <Head>
+        <title>Verify Email</title>
+        <meta property="og:title" content="Verify Email" key="title" />
+      </Head>
       {content}
     </Container>
   )

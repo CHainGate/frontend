@@ -19,6 +19,7 @@ import {useCountdown} from "../../src/Countdown";
 import {useGetConfigQuery} from "../../api/chaingate.generated";
 import BigNumber from "bignumber.js";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import Head from "next/head";
 
 export const isBrowser = typeof window !== "undefined";
 
@@ -247,6 +248,10 @@ function PaymentPageContainer(props: { pid: string | string[] | undefined, stage
     }
 
     return <React.Fragment>
+        <Head>
+            <title>Payment</title>
+            <meta property="og:title" content="Payment" key="title" />
+        </Head>
         <Grid className={styles.root} height={"100%"} container spacing={0} direction="column" alignItems="center"
               justifyContent="center">
             <Box className={styles.container} borderRadius={4} minWidth={"30vw"}>

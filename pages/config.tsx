@@ -9,6 +9,7 @@ import { GetWalletsApiArg } from '../api/chaingate.generated';
 import AddApiKeyForm from '../src/AddApiKeyForm';
 import ActiveApiKeys from '../src/ActiveApiKeys';
 import { useAppSelector } from '../lib/hooks';
+import Head from "next/head";
 
 const Configuration: NextPage = () => {
   const mode = useAppSelector((state) => state.internal.mode.mode);
@@ -21,6 +22,10 @@ const Configuration: NextPage = () => {
   const options = config?.supportedCryptoCurrencies?.filter(currency => !wallets?.find(wallet => wallet.currency === currency.shortName)) || []
     return (
         <Container maxWidth="sm">
+            <Head>
+                <title>Configuration</title>
+                <meta property="og:title" content="Configuration" key="title" />
+            </Head>
           <h1>Configuration</h1>
 
           {options.length > 0 && <AddWalletForm options={options}/>}
