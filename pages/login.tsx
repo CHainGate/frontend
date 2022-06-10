@@ -79,7 +79,7 @@ const Login: NextPage = () => {
                         <Button type="submit" color="primary" variant="contained" fullWidth>
                             Login
                         </Button>
-                        <Link href='/register'>
+                        <Link href='/register' passHref>
                             <Button type="submit" color="primary" variant="contained" fullWidth>
                                 Register
                             </Button>

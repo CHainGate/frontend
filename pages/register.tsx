@@ -75,7 +75,7 @@ const Register: NextPage = () => {
             <Button type="submit" color="primary" variant="contained" fullWidth>
               Register
             </Button>
-            <Link href='/login' >
+            <Link href='/login' passHref>
               <Button type="submit" color="primary" variant="contained" fullWidth>
                 Login
               </Button>
