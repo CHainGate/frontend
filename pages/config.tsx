@@ -1,13 +1,11 @@
 import * as React from 'react';
 import type { NextPage } from 'next';
-import Container from '@mui/material/Container';
-import SwitchMode from '../src/SwitchMode';
 import AddWalletForm from '../src/AddWalletForm';
+import Container from '@mui/material/Container';
 import ActiveWallets from '../src/ActiveWallets';
 import { useGetConfigQuery, useGetWalletsQuery } from '../api/chaingate.api';
 import { GetWalletsApiArg } from '../api/chaingate.generated';
-import AddApiKeyForm from '../src/AddApiKeyForm';
-import ActiveApiKeys from '../src/ActiveApiKeys';
+import ApiKey from '../src/ApiKey';
 import { useAppSelector } from '../lib/hooks';
 import Head from "next/head";
 
@@ -21,7 +19,7 @@ const Configuration: NextPage = () => {
 
   const options = config?.supportedCryptoCurrencies?.filter(currency => !wallets?.find(wallet => wallet.currency === currency.shortName)) || []
     return (
-        <Container maxWidth="sm">
+        <Container style={{ marginLeft: 300, height: 'auto' }}>
             <Head>
                 <title>Configuration</title>
                 <meta property="og:title" content="Configuration" key="title" />
@@ -32,13 +30,7 @@ const Configuration: NextPage = () => {
 
           <ActiveWallets wallets={wallets}/>
 
-          <h2>Secret API Key</h2>
-          <AddApiKeyForm keyType="secret" buttonText="create secret api key"/>
-          <ActiveApiKeys keyType="secret"/>
-
-          <h2>Public API Key</h2>
-          <AddApiKeyForm keyType="public" buttonText="create public api key"/>
-          <ActiveApiKeys keyType="public"/>
+          <ApiKey/>
         </Container>
     )
 };

@@ -77,12 +77,12 @@ const Register: NextPage = () => {
             {content}
           </Box>
           <Box my={2} width="100%">
-            <Button type="submit" color="primary" variant="contained" fullWidth>
+            <Button type="submit" color="primary" variant="contained" fullWidth sx={{marginBottom: 1}}>
               Register
             </Button>
             <Link href='/login' passHref>
               <Button type="submit" color="primary" variant="contained" fullWidth>
-                Login
+                Go To Login
               </Button>
             </Link>
           </Box>

@@ -210,8 +210,9 @@ const Dashboard: NextPage = () => {
               <title>Dashboard</title>
               <meta property="og:title" content="Dashboard" key="title" />
           </Head>
-          <div style={{ marginLeft: 300, height: 800, width: '80%' }}>
+          <div style={{ marginLeft: 300, width: '80%' }}>
           <DataGrid sx={{minWidth: 850}}
+              autoHeight={true}
               rows={rows}
               columns={columns}
               pageSize={10}

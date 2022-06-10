@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useAddWalletMutation } from '../api/chaingate.api';
 import { AddWalletApiArg, Currency } from '../api/chaingate.generated';
 import { useAppSelector } from '../lib/hooks';
+import FormControl from '@mui/material/FormControl';
+
 
 export default function AddWalletForm({options}: {options: Currency[]}) {
   const mode = useAppSelector((state) => state.internal.mode.mode);
@@ -40,26 +42,45 @@ export default function AddWalletForm({options}: {options: Currency[]}) {
 
   return (
     <>
-      <h2>Payout Wallet</h2>
+      <h2>Add Payout Address</h2>
       <form onSubmit={handleSubmit}>
-        <InputLabel id="currency">Currency</InputLabel>
-        <Select
-          labelId="currency"
-          id="currency"
-          value={selectedCurrency}
-          label="currency"
-          onChange={handleSelectionChange}
-        >
-          {options?.map((option: Currency) => (
-            <MenuItem key={option.shortName} value={option.shortName}>{option.shortName?.toUpperCase()}</MenuItem>
-          ))}
-        </Select>
+        <FormControl>
+          <InputLabel sx={{}} id="currency">Currency</InputLabel>
+          <Select sx={{ width: 150}}
+                  labelId="currency"
+                  id="currency"
+                  value={selectedCurrency}
+                  label="currency"
+                  required
+                  onChange={handleSelectionChange}
+          >
+            {options?.map((option: Currency) => (
+              <MenuItem key={option.shortName} value={option.shortName}>{option.shortName?.toUpperCase()}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-        <TextField value={newPayoutWallet} id="payoutAddress" name="payoutAddress" label="Payout Address" type="text" fullWidth variant="standard" required onChange={handleWalletChange} />
+        <TextField
+          sx={{marginLeft: 2, width: 500}}
+          value={newPayoutWallet}
+          id="payoutAddress"
+          name="payoutAddress"
+          label="Payout Address"
+          type="text"
+          variant="outlined"
+          required
+          onChange={handleWalletChange}
+        />
 
-        <Button type="submit" color="primary" variant="contained" fullWidth>
-          Add new wallet
-        </Button>
+        <div>
+          <Button
+            sx={{marginTop: 2, width: 665}}
+            type="submit"
+            color="primary"
+            variant="contained">
+            Add new wallet
+          </Button>
+        </div>
       </form>
     </>
   )

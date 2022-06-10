@@ -1,10 +1,9 @@
 import { combineReducers, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import jwt_decode from 'jwt-decode';
-import { chaingateApi } from '../baseApi';
 
 export type JWTTokenData = {
-    name: string,
-    nameid: string,
+    firstName: string,
+    iss: string,
     role: string,
     nbf: number,
     exp: number,
@@ -12,10 +11,9 @@ export type JWTTokenData = {
 };
 
 export type AuthInfo = {
-    username: string;
-    userid?: number;
+    firstName: string;
+    email: string;
     token: string;
-    roles?: string;
     isAuthenticated: boolean;
 };
 
@@ -24,10 +22,9 @@ export type Mode = {
 };
 
 const initialState: AuthInfo = {
-    username: '',
-    userid: 0,
+    firstName: '',
+    email: '',
     token: '',
-    roles: '',
     isAuthenticated: false,
 }
 
@@ -39,15 +36,13 @@ const userSlice = createSlice({
     name: 'authInfo',
     initialState,
     reducers: {
-        setCredentials: (state, { payload: { username, token } }: PayloadAction<AuthInfo>) => {
-            // TODO JWT token has only iss and exp currently
-            const decodedToken: JWTTokenData = jwt_decode(token);
-            state.username = username;
-            state.userid = parseInt(decodedToken.nameid, 10);
-            state.token = token;
-            state.roles = decodedToken.role;
+        setCredentials: (state, { payload }: PayloadAction<string>) => {
+            const decodedToken: JWTTokenData = jwt_decode(payload);
+            state.firstName = decodedToken.firstName;
+            state.email = decodedToken.iss;
+            state.token = payload;
             state.isAuthenticated = true;
-            localStorage.setItem('token', token);
+            localStorage.setItem('token', payload);
         },
         clearUser: () => {
             localStorage.removeItem('token');
@@ -59,6 +54,9 @@ const modeSlice = createSlice({
     name: 'mode',
     initialState: mode,
     reducers: {
+        setMode: (state, { payload }: PayloadAction<"main" | "test">) => {
+            state.mode = payload;
+        },
         changeMode: (state) => {
             let newMode: "test" | "main";
             if (state.mode === "test") {
@@ -67,6 +65,7 @@ const modeSlice = createSlice({
                 newMode = "test";
             }
             state.mode = newMode;
+            localStorage.setItem('mode', newMode);
         },
     },
 });
@@ -84,6 +83,7 @@ export const {
 
 export const {
     changeMode,
+    setMode,
 } = modeSlice.actions;
 
 export default reducer;
