@@ -25,11 +25,14 @@ export const isBrowser = typeof window !== "undefined";
 type SocketMessage = {
     messageType: string
     body: {
-        currency:   string
-        payAddress: string
-        payAmount:  string
-        expireTime: string
-        mode: 	    string
+        initialState:   boolean
+        currency:       string
+        payAddress:     string
+        payAmount:      string
+        expireTime:     string
+        mode: 	        string
+        successPageURL: string
+        failurePageURL: string
     }
 }
 
@@ -155,14 +158,22 @@ function getBlockExplorerURL(address: string, currency: string,  mode: string) {
         }
     }
 }
-function Paid() {
-    return <div className={`${styles.loader} ${styles["load-complete"]}`}>
-        <div className={`${styles.checkmark} ${styles.draw}`}></div>
-    </div>;
+function Paid(props: {stage: SocketMessage}) {
+    useEffect(() => {
+        if (!props.stage.body.initialState) {
+            setTimeout(() => {window.location.href = props.stage.body.successPageURL;}, 5000);
+        }
+    }, [props.stage]);
+    return <Box display='flex' flexDirection='column' alignItems={'center'}><div className={`${styles.loader} ${styles["load-complete"]}`}>
+                <div className={`${styles.checkmark} ${styles.draw}`}></div>
+            </div>
+        <div>Waiting to be confirmed...</div>
+        <Button href={props.stage.body.successPageURL}>Back to the merchant</Button>
+    </Box>;
 }
 
-function Confirmed() {
-    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"}>
+function Confirmed(props: {stage: SocketMessage}) {
+    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"} flexDirection={"column"}>
         <Box className={`${styles.loader} ${styles["load-complete"]}`}>
             <div className={`${styles.checkmark} ${styles.draw}`}></div>
             <Chip
@@ -172,10 +183,17 @@ function Confirmed() {
                 deleteIcon={<DoneIcon/>}
             />
         </Box>
+        <Button href={props.stage.body.successPageURL}>Back to the merchant</Button>
     </Box>;
 }
 
-function Expired() {
+function Expired(props: {stage: SocketMessage}) {
+    useEffect(() => {
+        if (!props.stage.body.initialState) {
+            setTimeout(() => {window.location.href = props.stage.body.failurePageURL;}, 5000);
+        }
+    }, [props.stage]);
+
     return <Box alignItems={"center"} justifyContent={"center"} display={"flex"}>
         <Box className={`${styles.loader} ${styles["load-complete"]} ${styles.cross}`}>
             <div className={`${styles.crossline} ${styles.crosslineleft} ${styles.draw}`}></div>
@@ -186,6 +204,28 @@ function Expired() {
                 label="expired"
                 deleteIcon={<DoneIcon/>}
             />
+            <Button href={props.stage.body.failurePageURL}>Back to the merchant</Button>
+        </Box>
+    </Box>;
+}
+
+function Failed(props: {stage: SocketMessage}) {
+    useEffect(() => {
+        if (!props.stage.body.initialState) {
+            setTimeout(() => {window.location.href = props.stage.body.failurePageURL;}, 5000);
+        }
+    }, [props.stage]);
+
+    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"}>
+        <Box className={`${styles.loader} ${styles["load-complete"]} ${styles.cross}`}>
+            <div className={`${styles.crossline} ${styles.crosslineleft} ${styles.draw}`}></div>
+            <div className={`${styles.crossline} ${styles.crosslineright} ${styles.draw}`}></div>
+            <Chip
+                className={styles.chip}
+                color="error"
+                label="failed"
+                deleteIcon={<DoneIcon/>}
+            />
         </Box>
     </Box>;
 }
@@ -194,7 +234,7 @@ function PaymentPageContainer(props: { pid: string | string[] | undefined, stage
     const [days, hours, minutes, seconds] = useCountdown(props.stage?.body.expireTime);
 
     let content
-    if (days + hours + minutes + seconds <= 0) {
+    if ((props.stage.messageType == 'waiting' || props.stage.messageType == 'partially_paid') && days + hours + minutes + seconds <= 0) {
         content = (
             <Box display='flex' flexDirection='column' alignItems='center'>
                 <h3>Please don&apos;t send any money anymore because the payment will soon expire!</h3>
@@ -216,7 +256,7 @@ function PaymentPageContainer(props: { pid: string | string[] | undefined, stage
                             <Typography>{props.pid}</Typography>
                         </Grid>
                         <Grid item marginLeft={"auto"}>
-                            {props.stage?.body.expireTime &&
+                            {props.stage?.body.expireTime && (props.stage.messageType == 'waiting' || props.stage.messageType == 'partially_paid') &&
                                 <CountdownTimer targetDate={props.stage?.body.expireTime}/>}
                         </Grid>
                     </Grid>
@@ -234,7 +274,7 @@ function PaymentPageContainer(props: { pid: string | string[] | undefined, stage
 const Payment: NextPage = () =>  {
     const router = useRouter()
     const { pid } = router.query
-    const initialStage: SocketMessage = {messageType: "loading", body: {currency: "", mode:"", payAddress: "", payAmount: "", expireTime: ""}}
+    const initialStage: SocketMessage = {messageType: "loading", body: {initialState: true, currency: "", mode:"", payAddress: "", payAmount: "", expireTime: "", successPageURL:"", failurePageURL: ""}}
     const [formValues, setFormValues] = useState({currency: ''})
     const [wsInstance, setWsInstance] = useState(null as unknown as WebSocket | null);
     const [stage, setStage] = useState(initialStage);
@@ -299,20 +339,24 @@ const Payment: NextPage = () =>  {
                 break
             case "paid":
                 body = (
-                    // https://codepen.io/scottloway/pen/zqoLyQ
-                    <Paid/>
+                    <Paid stage={stage}/>
                 )
                 break
             case "confirmed":
             case "forwarded":
             case "finished":
                 body = (
-                    <Confirmed/>
+                    <Confirmed stage={stage}/>
                 )
                 break
             case "expired":
                 body = (
-                    <Expired/>
+                    <Expired stage={stage}/>
+                )
+                break
+            case "failed":
+                body = (
+                    <Failed stage={stage}/>
                 )
                 break
             default:
@@ -325,7 +369,9 @@ const Payment: NextPage = () =>  {
     useEffect(() => {
         let ws : WebSocket
         if(isBrowser && pid) {
-            ws = new WebSocket(`ws://127.0.0.1:8000/ws?pid=${pid}`);
+            const ws = process.env.NODE_ENV == "development"
+                ? new WebSocket(`ws://127.0.0.1:8000/ws?pid=${pid}`)
+                : new WebSocket(`ws://127.0.0.1/backend/ws?pid=${pid}`)
             ws.addEventListener('message', function (event) {
                 setStage(JSON.parse(event.data))
                 console.log('Message from server ', event.data);
