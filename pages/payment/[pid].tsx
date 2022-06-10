@@ -194,7 +194,7 @@ function Expired(props: {stage: SocketMessage}) {
         }
     }, [props.stage]);
 
-    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"}>
+    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"} flexDirection={"column"}>
         <Box className={`${styles.loader} ${styles["load-complete"]} ${styles.cross}`}>
             <div className={`${styles.crossline} ${styles.crosslineleft} ${styles.draw}`}></div>
             <div className={`${styles.crossline} ${styles.crosslineright} ${styles.draw}`}></div>
@@ -204,8 +204,8 @@ function Expired(props: {stage: SocketMessage}) {
                 label="expired"
                 deleteIcon={<DoneIcon/>}
             />
-            <Button href={props.stage.body.failurePageURL}>Back to the merchant</Button>
         </Box>
+        <Button href={props.stage.body.failurePageURL}>Back to the merchant</Button>
     </Box>;
 }
 
@@ -216,7 +216,7 @@ function Failed(props: {stage: SocketMessage}) {
         }
     }, [props.stage]);
 
-    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"}>
+    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"} flexDirection={"column"}>
         <Box className={`${styles.loader} ${styles["load-complete"]} ${styles.cross}`}>
             <div className={`${styles.crossline} ${styles.crosslineleft} ${styles.draw}`}></div>
             <div className={`${styles.crossline} ${styles.crosslineright} ${styles.draw}`}></div>
@@ -227,6 +227,7 @@ function Failed(props: {stage: SocketMessage}) {
                 deleteIcon={<DoneIcon/>}
             />
         </Box>
+        <Button href={props.stage.body.failurePageURL}>Back to the merchant</Button>
     </Box>;
 }
 
