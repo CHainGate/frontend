@@ -20,6 +20,7 @@ import {useGetConfigQuery} from "../../api/chaingate.generated";
 import BigNumber from "bignumber.js";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Head from "next/head";
+import CopySnackbar from "../../src/CopySnackbar";
 
 export const isBrowser = typeof window !== "undefined";
 
@@ -81,8 +82,8 @@ const ShowCounter = ({ minutes, seconds }: any) => {
     );
 };
 
-const handleClickToClipboard = (address: string) => {
-    navigator.clipboard.writeText(address)
+const handleClickToClipboard = ({address, opensnackbar}: { address: string, opensnackbar: (isOpen: any) => void}) => {
+    navigator.clipboard.writeText(address).then(() => opensnackbar(true));
 };
 
 function CurrencySelection(props: { onSubmit: (event: { preventDefault: () => void }) => void, formValues: { currency: string }, onClickETH: () => void, onClickBTC: () => void }) {
@@ -119,6 +120,8 @@ function CurrencySelection(props: { onSubmit: (event: { preventDefault: () => vo
 }
 
 function Waiting(props: { payAmount: BigNumber, stage: SocketMessage}) {
+    const [isSnackbarOpen, setIsSnackbarOpen] = React.useState<boolean>(false);
+
     return <Grid container alignItems={"center"} justifyContent={"center"} flexDirection={"column"}>
         <Grid item className={styles.loader}/>
         <Grid item marginBottom={5}>
@@ -127,7 +130,10 @@ function Waiting(props: { payAmount: BigNumber, stage: SocketMessage}) {
         <Grid item width={"100%"}>
             <OutlinedInput fullWidth label="address" value={props.stage.body.payAddress} endAdornment={
                 <InputAdornment position="end">
-                    <IconButton onClick={() => handleClickToClipboard(props.stage.body.payAddress)}>
+                    <IconButton onClick={() => handleClickToClipboard({
+                        address: props.stage.body.payAddress,
+                        opensnackbar: setIsSnackbarOpen
+                    })}>
                         {<ContentCopyIcon />}
                     </IconButton>
                 </InputAdornment>
@@ -141,6 +147,7 @@ function Waiting(props: { payAmount: BigNumber, stage: SocketMessage}) {
         <Grid item>
             <a style={{textDecoration: 'underline'}} target='_blank' href={getBlockExplorerURL(props.stage.body.payAddress, props.stage.body.currency, props.stage.body.mode)} rel="noreferrer">(Check Block Explorer)</a>
         </Grid>
+        <CopySnackbar isOpen={isSnackbarOpen} setIsOpen={setIsSnackbarOpen}></CopySnackbar>
     </Grid>;
 }
 

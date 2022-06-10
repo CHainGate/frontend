@@ -19,11 +19,10 @@ export default function CopySnackbar({isOpen, setIsOpen} : {isOpen: boolean, set
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={isOpen}
         onClose={() => setIsOpen(false)}
-        key={'vertical + horizontal'}
         autoHideDuration={1500}
       >
         <Alert onClose={() => setIsOpen(false)} severity="success" sx={{ width: '100%' }}>
-          Copy successfully.
+          Copied successfully.
         </Alert>
       </Snackbar>
     </>
