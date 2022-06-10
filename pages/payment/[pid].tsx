@@ -19,6 +19,7 @@ import {useCountdown} from "../../src/Countdown";
 import {useGetConfigQuery} from "../../api/chaingate.generated";
 import BigNumber from "bignumber.js";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import Head from "next/head";
 
 export const isBrowser = typeof window !== "undefined";
 
@@ -194,7 +195,7 @@ function Expired(props: {stage: SocketMessage}) {
         }
     }, [props.stage]);
 
-    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"}>
+    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"} flexDirection={"column"}>
         <Box className={`${styles.loader} ${styles["load-complete"]} ${styles.cross}`}>
             <div className={`${styles.crossline} ${styles.crosslineleft} ${styles.draw}`}></div>
             <div className={`${styles.crossline} ${styles.crosslineright} ${styles.draw}`}></div>
@@ -204,8 +205,8 @@ function Expired(props: {stage: SocketMessage}) {
                 label="expired"
                 deleteIcon={<DoneIcon/>}
             />
-            <Button href={props.stage.body.failurePageURL}>Back to the merchant</Button>
         </Box>
+        <Button href={props.stage.body.failurePageURL}>Back to the merchant</Button>
     </Box>;
 }
 
@@ -216,7 +217,7 @@ function Failed(props: {stage: SocketMessage}) {
         }
     }, [props.stage]);
 
-    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"}>
+    return <Box alignItems={"center"} justifyContent={"center"} display={"flex"} flexDirection={"column"}>
         <Box className={`${styles.loader} ${styles["load-complete"]} ${styles.cross}`}>
             <div className={`${styles.crossline} ${styles.crosslineleft} ${styles.draw}`}></div>
             <div className={`${styles.crossline} ${styles.crosslineright} ${styles.draw}`}></div>
@@ -227,6 +228,7 @@ function Failed(props: {stage: SocketMessage}) {
                 deleteIcon={<DoneIcon/>}
             />
         </Box>
+        <Button href={props.stage.body.failurePageURL}>Back to the merchant</Button>
     </Box>;
 }
 
@@ -246,6 +248,10 @@ function PaymentPageContainer(props: { pid: string | string[] | undefined, stage
     }
 
     return <React.Fragment>
+        <Head>
+            <title>Payment</title>
+            <meta property="og:title" content="Payment" key="title" />
+        </Head>
         <Grid className={styles.root} height={"100%"} container spacing={0} direction="column" alignItems="center"
               justifyContent="center">
             <Box className={styles.container} borderRadius={4} minWidth={"30vw"}>
