@@ -4,7 +4,7 @@ import AddWalletForm from '../src/AddWalletForm';
 import ActiveWallets from '../src/ActiveWallets';
 import { useGetConfigQuery, useGetWalletsQuery } from '../api/chaingate.api';
 import { GetWalletsApiArg } from '../api/chaingate.generated';
-import AddApiKeyForm from '../src/AddApiKeyForm';
+import ApiKey from '../src/ApiKey';
 import { useAppSelector } from '../lib/hooks';
 
 const Configuration: NextPage = () => {
@@ -24,7 +24,7 @@ const Configuration: NextPage = () => {
 
           <ActiveWallets wallets={wallets}/>
 
-          <AddApiKeyForm/>
+          <ApiKey/>
         </div>
     )
 };

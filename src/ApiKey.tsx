@@ -12,10 +12,11 @@ import { useDeleteApiKeyMutation, useGenerateApiKeyMutation, useGetApiKeyQuery }
 import { DeleteApiKeyApiArg, GenerateApiKeyApiArg } from '../api/chaingate.generated';
 import { useAppSelector } from '../lib/hooks';
 import styles from "../styles/ApiKey.module.scss"
+import CopySnackbar from './CopySnackbar';
 
 
 
-export default function AddApiKeyForm() {
+export default function ApiKey() {
   const [showApiKey, setShowApiKey] = React.useState<boolean>(false);
   const mode = useAppSelector((state) => state.internal.mode.mode);
   const { data, isLoading: getApiKeyLoading, isError } = useGetApiKeyQuery({ mode });
@@ -42,9 +43,11 @@ export default function AddApiKeyForm() {
 
   const handleClickToClipboard = (address: string | undefined) => {
     if (address) {
-      navigator.clipboard.writeText(address)
+      navigator.clipboard.writeText(address).then(() => setIsSnackbarOpen(true));
     }
   };
+
+  const [isSnackbarOpen, setIsSnackbarOpen] = React.useState<boolean>(false);
 
     return (
     <>
@@ -88,6 +91,7 @@ export default function AddApiKeyForm() {
           </Button>
         }
       </div>
+      <CopySnackbar isOpen={isSnackbarOpen} setIsOpen={setIsSnackbarOpen}></CopySnackbar>
     </>
   )
 }
