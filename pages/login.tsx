@@ -2,12 +2,12 @@ import * as React from 'react';
 import type { NextPage } from 'next';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import {Alert, Button, CircularProgress, Grid, Paper, TextField} from "@mui/material";
+import {Alert, Button, CircularProgress, Grid, TextField} from "@mui/material";
 import { LoginRequestDto, LoginApiArg, useLoginMutation} from '../api/chaingate.generated';
 import {useState} from "react";
 import logo from '../public/CHainGate_inverted.svg';
 import Image from 'next/image'
-import {AuthInfo, setCredentials} from "../lib/authInfo/reducers";
+import { setCredentials } from "../lib/authInfo/reducers";
 import {useAppDispatch} from "../lib/hooks";
 import {useRouter} from "next/router";
 import Link from "next/link";
@@ -34,13 +34,7 @@ const Login: NextPage = () => {
 
             const response = await login(loginArg).unwrap()
 
-            const authInfo: AuthInfo = {
-                username: formState.email,
-                token: response.token,
-                isAuthenticated: true,
-            };
-
-            dispatch(setCredentials(authInfo));
+            dispatch(setCredentials(response.token));
             router.push('/dashboard');
         } catch {
 
@@ -72,11 +66,11 @@ const Login: NextPage = () => {
                     <Box className="login-form-logo-container">
                         <Image height={142} width={230} src={logo} alt="Logo exRap" className="logo" />
                     </Box>
-                    <Box my={2}>
+                    <Box my={2} width={"100%"}>
                         {content}
                     </Box>
-                    <Box my={2} width="100%">
-                        <Button type="submit" color="primary" variant="contained" fullWidth>
+                    <Box my={2} width={"100%"}>
+                        <Button type="submit" color="primary" variant="contained" fullWidth sx={{marginBottom: 1}}>
                             Login
                         </Button>
                         <Link href='/register'>

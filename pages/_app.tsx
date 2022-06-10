@@ -1,14 +1,13 @@
 import '../styles/globals.scss'
-import type { AppProps } from 'next/app'
 import Head from 'next/head';
 import createEmotionCache from "../src/createEmotionCache";
-import { CacheProvider, EmotionCache } from '@emotion/react';
+import { CacheProvider } from '@emotion/react';
 import {ThemeProvider} from "@mui/material/styles";
 import theme from "../src/theme";
 import {CssBaseline} from "@mui/material";
 import Sidebar from "../src/Sidebar";
 import * as React from "react";
-import { useAppDispatch, useAppSelector } from "../lib/hooks";
+import { useAppSelector } from "../lib/hooks";
 import PrivateRoute from '../src/PrivateRoute';
 import {useRouter} from "next/router";
 

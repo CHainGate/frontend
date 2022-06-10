@@ -205,8 +205,10 @@ const Dashboard: NextPage = () => {
 
     return (
       <>
-          <div style={{ marginLeft: 300, height: 800, width: '80%' }}>
+          <div style={{ marginLeft: 300, width: '80%' }}>
+          <h1>Dashboard</h1>
           <DataGrid sx={{minWidth: 850}}
+              autoHeight={true}
               rows={rows}
               columns={columns}
               pageSize={10}

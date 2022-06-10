@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../lib/hooks';
 import { useEffect } from 'react';
 import { AppDispatch } from '../lib/store';
 import jwt_decode from 'jwt-decode';
-import { AuthInfo, clearUser, setCredentials } from '../lib/authInfo/reducers';
+import { clearUser, setCredentials, setMode } from '../lib/authInfo/reducers';
 import { CircularProgress } from '@mui/material';
 import * as React from 'react';
 
@@ -16,14 +16,8 @@ function isTokenValid(token: string): boolean {
 
 function updateStore(token: string, dispatch: AppDispatch) {
   const result: boolean = isTokenValid(token);
-  const decodedToken: any = jwt_decode(token);
   if (result) {
-    const authInfo: AuthInfo = {
-      username: decodedToken.name,
-      token,
-      isAuthenticated: true,
-    };
-    dispatch(setCredentials(authInfo));
+    dispatch(setCredentials(token));
   } else {
     dispatch(clearUser());
     router.push('/login').then();
@@ -44,6 +38,11 @@ export default function PrivateRoute({ children }: any) {
     } else if (!openPages.includes(router.pathname) && !router.pathname.startsWith(paymentPage)) {
       clearUser();
       router.push('/login');
+    }
+
+    const mode = localStorage.getItem('mode');
+    if (mode === "test" || mode === "main") {
+      dispatch(setMode(mode))
     }
   }, [])
 

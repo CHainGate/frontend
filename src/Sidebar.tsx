@@ -8,8 +8,8 @@ import {
     ListItemText
 } from "@mui/material";
 import createStyles from "@mui/styles/createStyles";
-import {color, Theme} from "@mui/system";
-import {useAppDispatch, useAppSelector} from "../lib/hooks";
+import { Theme} from "@mui/system";
+import { useAppDispatch, useAppSelector } from "../lib/hooks";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -97,6 +97,14 @@ export default function Sidebar() {
         router.push('/login');
     };
 
+    const handleApiDoc = () => {
+        const swaggerDocUrl = process.env.NODE_ENV == "development"
+          ? "http://localhost:8000/api/public/swaggerui/"
+          : "http://localhost/backend/api/public/swaggerui";
+        const win = window.open(swaggerDocUrl, "_blank")
+        win?.focus();
+    }
+
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
@@ -112,7 +120,8 @@ export default function Sidebar() {
 
     const secondaryPages : NavigationAction[] = [
         { fn: handleSignout, label: 'Ausloggen', icon: <ExitToAppIcon /> },
-        { fn: handleSignout, label: 'API Doc', icon: <ArticleIcon  /> },
+        { fn: handleApiDoc, label: 'Swagger Doc', icon: <ArticleIcon  /> },
+        { fn: handleApiDoc, label: 'API Doc', icon: <ArticleIcon  /> },
     ];
 
     const drawer = (
@@ -126,7 +135,7 @@ export default function Sidebar() {
                     <ListItemIcon>
                         <AccountCircleIcon style={{ color: 'white' }} />
                     </ListItemIcon>
-                    <ListItemText style={{overflow: 'hidden', textOverflow: "ellipsis"}}  primary={currentUser.username} />
+                    <ListItemText style={{overflow: 'hidden', textOverflow: "ellipsis"}}  primary={currentUser.firstName} />
                 </ListItem>
             </List>
             <Divider />
