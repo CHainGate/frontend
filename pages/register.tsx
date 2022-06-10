@@ -8,6 +8,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { RegisterMerchantApiArg, RegisterRequestDto, useRegisterMerchantMutation } from '../api/chaingate.generated';
 import Link from "next/link";
+import Head from "next/head";
 
 
 const Register: NextPage = () => {
@@ -57,6 +58,10 @@ const Register: NextPage = () => {
 
   return (
     <Container maxWidth="sm">
+      <Head>
+        <title>Register</title>
+        <meta property="og:title" content="Register" key="title" />
+      </Head>
       <form onSubmit={handleRegister} className="register-form">
         <Grid
           container
@@ -75,7 +80,7 @@ const Register: NextPage = () => {
             <Button type="submit" color="primary" variant="contained" fullWidth sx={{marginBottom: 1}}>
               Register
             </Button>
-            <Link href='/login' >
+            <Link href='/login' passHref>
               <Button type="submit" color="primary" variant="contained" fullWidth>
                 Go To Login
               </Button>

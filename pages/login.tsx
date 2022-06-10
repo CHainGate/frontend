@@ -11,6 +11,7 @@ import { setCredentials } from "../lib/authInfo/reducers";
 import {useAppDispatch} from "../lib/hooks";
 import {useRouter} from "next/router";
 import Link from "next/link";
+import Head from "next/head";
 
 const Login: NextPage = () => {
     const dispatch = useAppDispatch();
@@ -55,6 +56,10 @@ const Login: NextPage = () => {
 
     return (
         <Container maxWidth="sm">
+            <Head>
+                <title>Login</title>
+                <meta property="og:title" content="Login" key="title" />
+            </Head>
             <form onSubmit={handleLogin} className="login-form">
                 <Grid
                     container
@@ -73,7 +78,7 @@ const Login: NextPage = () => {
                         <Button type="submit" color="primary" variant="contained" fullWidth sx={{marginBottom: 1}}>
                             Login
                         </Button>
-                        <Link href='/register'>
+                        <Link href='/register' passHref>
                             <Button type="submit" color="primary" variant="contained" fullWidth>
                                 Register
                             </Button>
