@@ -19,7 +19,7 @@ const Configuration: NextPage = () => {
 
   const options = config?.supportedCryptoCurrencies?.filter(currency => !wallets?.find(wallet => wallet.currency === currency.shortName)) || []
     return (
-        <Container maxWidth="sm" style={{ marginLeft: 300, height: 'auto', width: '80%' }}>
+        <Container style={{ marginLeft: 300, height: 'auto' }}>
             <Head>
                 <title>Configuration</title>
                 <meta property="og:title" content="Configuration" key="title" />
