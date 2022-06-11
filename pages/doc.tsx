@@ -33,7 +33,7 @@ const Doc: NextPage = () => {
       CHainGate is a cryptocurrency payment provider. With our service we help merchants to integrate cryptocurrency payments.
       Currently we provide ethereum and bitcoin payments, but plan to expand our offer.
 
-      <p style={{fontWeight: "bold"}}><Link href={swaggerDocUrl}>Here do you find our OpenAPI Specification</Link></p>
+      <p><strong><Link href={swaggerDocUrl}>Here do you find our OpenAPI Specification</Link></strong></p>
 
       <h2>Authentication</h2>
       To use the CHainGate API you should do the following:
@@ -48,7 +48,7 @@ const Doc: NextPage = () => {
       Every blockchain has a mainnet for production and a testnet for testing.
       On our dashboard you have a switch to change from mainnet to testnet.
 
-      <p style={{fontWeight: "bold"}}>To create a testnet payment, you need to use your testnet API key.</p>
+      <p><strong>To create a testnet payment, you need to use your testnet API key.</strong></p>
 
       <h3>Create a test wallet</h3>
       <ol>
