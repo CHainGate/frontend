@@ -28,7 +28,7 @@ export default function PrivateRoute({ children }: any) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const authInfo = useAppSelector((state) => state.internal.authInfo);
-  const openPages = ['/login', '/register', '/verifyemail', '/payment'];
+  const openPages = ['/login', '/register', '/verifyemail', '/payment', '/doc'];
   const paymentPage = '/payment/';
 
   useEffect(() => {

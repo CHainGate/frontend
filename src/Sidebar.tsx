@@ -98,10 +98,13 @@ export default function Sidebar() {
     };
 
     const handleApiDoc = () => {
-        const swaggerDocUrl = process.env.NODE_ENV == "development"
-          ? "http://localhost:8000/api/public/swaggerui/"
-          : "http://localhost/backend/api/public/swaggerui";
+        const swaggerDocUrl = "http://localhost:8000/api/public/swaggerui/"
         const win = window.open(swaggerDocUrl, "_blank")
+        win?.focus();
+    }
+
+    const handleDoc = () => {
+        const win = window.open('/doc', "_blank")
         win?.focus();
     }
 
@@ -121,7 +124,7 @@ export default function Sidebar() {
     const secondaryPages : NavigationAction[] = [
         { fn: handleSignout, label: 'Ausloggen', icon: <ExitToAppIcon /> },
         { fn: handleApiDoc, label: 'Swagger Doc', icon: <ArticleIcon  /> },
-        { fn: handleApiDoc, label: 'API Doc', icon: <ArticleIcon  /> },
+        { fn: handleDoc, label: 'API Doc', icon: <ArticleIcon  /> },
     ];
 
     const drawer = (
