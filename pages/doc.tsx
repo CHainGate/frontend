@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Link from '@mui/material/Link';
 
 const Doc: NextPage = () => {
+  const exampleUrl = "https://github.com/CHainGate/example-app/blob/main/nodejs-server/app.js#L20";
   const swaggerDocUrl = process.env.NODE_ENV == "development"
     ? "http://localhost:8000/api/public/swaggerui/"
     : "http://localhost/backend/api/public/swaggerui";
@@ -111,6 +112,8 @@ const Doc: NextPage = () => {
       To verify that the webhook is really from CHainGate, we have build a security mechanism.
       When receiving a webhook, you need to sort the data by key and use hmac with your API key to create a hash.
       In the webhook, there is a signature. If your generated hash is the same as the signature from the webhook, you can be sure that it is a valid request.
+
+      <p><Link href={exampleUrl}>Here</Link> do you find an example implementation in nodejs.</p>
       </Container>
       <Footer/>
     </>
