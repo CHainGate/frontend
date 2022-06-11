@@ -8,7 +8,7 @@ import {useState} from "react";
 import logo from '../public/CHainGate_inverted.svg';
 import Image from 'next/image'
 import { setCredentials } from "../lib/authInfo/reducers";
-import {useAppDispatch} from "../lib/hooks";
+import { useAppDispatch, useAppSelector } from "../lib/hooks";
 import {useRouter} from "next/router";
 import Link from "next/link";
 import Head from "next/head";
@@ -18,6 +18,11 @@ const Login: NextPage = () => {
     const router = useRouter();
     const [formState, setFormState] = useState({ email: '', password: '' });
     const [login, { isLoading, error }] = useLoginMutation();
+    const authInfo = useAppSelector((state) => state.internal.authInfo);
+
+    if (authInfo.isAuthenticated) {
+        router.push('/dashboard');
+    }
 
     const handleChange = ({
       target: { name, value },

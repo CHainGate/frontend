@@ -24,10 +24,10 @@ function App(props : any) {
     const router = useRouter()
 
     let comp;
-    if (authInfo.isAuthenticated && !router.pathname.startsWith('/payment/')) {
-        comp = <Sidebar />;
+    if (!authInfo.isAuthenticated || (authInfo.isAuthenticated && (router.pathname.startsWith('/payment/') || router.pathname === '/doc'))) {
+      comp = <></>;
     } else {
-        comp = <></>;
+      comp = <Sidebar />;
     }
 
     return (
