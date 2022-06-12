@@ -38,18 +38,23 @@ a {
     color: #fff;
   }
 
-  .data-grid--paid  {
+  .data-grid--paid {
     background: rgba(0, 0, 28, 0.85);
     color: #fff;
   }
 
-  .data-grid--waiting{
+  .data-grid--partially_paid {
     background: rgba(0, 0, 28, 0.8);
     color: #fff;
   }
 
-  .data-grid--currency_selection {
+  .data-grid--waiting{
     background: rgba(0, 0, 28, 0.75);
+    color: #fff;
+  }
+
+  .data-grid--currency_selection {
+    background: rgba(0, 0, 28, 0.70);
     color: #fff;
   }
 
