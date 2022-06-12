@@ -31,6 +31,7 @@ type SocketMessage = {
         currency:       string
         payAddress:     string
         payAmount:      string
+        actuallyPaid:   string
         expireTime:     string
         mode: 	        string
         successPageURL: string
@@ -148,6 +149,53 @@ function Waiting(props: { payAmount: BigNumber, stage: SocketMessage}) {
             <a style={{textDecoration: 'underline'}} target='_blank' href={getBlockExplorerURL(props.stage.body.payAddress, props.stage.body.currency, props.stage.body.mode)} rel="noreferrer">(Check Block Explorer)</a>
         </Grid>
         <CopySnackbar isOpen={isSnackbarOpen} setIsOpen={setIsSnackbarOpen} content={"Successfully copied."}></CopySnackbar>
+    </Grid>;
+}
+
+function PartiallyPaid(props: { payAmount: BigNumber, stage: SocketMessage, factor: BigNumber}) {
+    const [isSnackbarOpen, setIsSnackbarOpen] = React.useState<boolean>(false);
+
+    let payamount_big = new BigNumber(props.stage.body.payAmount)
+    let actuallyPaid_big = new BigNumber(props.stage.body.actuallyPaid)
+    let remaining = payamount_big.minus(actuallyPaid_big)
+    let actuallyPaid_eth = props.factor ? actuallyPaid_big.div(props.factor) : new BigNumber(0)
+    let remaining_eth = props.factor ? remaining.div(props.factor) : new BigNumber(0)
+
+    return <Grid container alignItems={"center"} justifyContent={"center"} flexDirection={"column"}>
+        <Grid item className={styles.loader}/>
+        Full amount:
+        <Grid item marginBottom={2}>
+            <Typography variant="h6" fontSize={16}>{props.payAmount.toString()} {props.stage.body.currency.toUpperCase()}</Typography>
+        </Grid>
+        Paid:
+        <Grid item marginBottom={4}>
+            <Typography variant="h6" fontSize={16}>{actuallyPaid_eth.toString()} {props.stage.body.currency.toUpperCase()}</Typography>
+        </Grid>
+        Remaining:
+        <Grid item marginBottom={5}>
+            <Typography variant="h5">{remaining_eth.toString()} {props.stage.body.currency.toUpperCase()}</Typography>
+        </Grid>
+        <Grid item width={"100%"}>
+            <OutlinedInput fullWidth label="address" value={props.stage.body.payAddress} endAdornment={
+                <InputAdornment position="end">
+                    <IconButton onClick={() => handleClickToClipboard({
+                        address: props.stage.body.payAddress,
+                        opensnackbar: setIsSnackbarOpen
+                    })}>
+                        {<ContentCopyIcon />}
+                    </IconButton>
+                </InputAdornment>
+            }/>
+        </Grid>
+        <Grid item marginTop={2} textAlign='center'>
+            <em>You <a href={getBlockExplorerURL(props.stage.body.payAddress, props.stage.body.currency, props.stage.body.mode)}>sent</a> your money and it recognizes it?</em>
+            <br />
+            <em>Please stay calm it gets rechecked before it expires.</em>
+        </Grid>
+        <Grid item>
+            <a style={{textDecoration: 'underline'}} target='_blank' href={getBlockExplorerURL(props.stage.body.payAddress, props.stage.body.currency, props.stage.body.mode)} rel="noreferrer">(Check Block Explorer)</a>
+        </Grid>
+        <CopySnackbar isOpen={isSnackbarOpen} setIsOpen={setIsSnackbarOpen}></CopySnackbar>
     </Grid>;
 }
 
@@ -287,7 +335,7 @@ function PaymentPageContainer(props: { pid: string | string[] | undefined, stage
 const Payment: NextPage = () =>  {
     const router = useRouter()
     const { pid } = router.query
-    const initialStage: SocketMessage = {messageType: "loading", body: {initialState: true, currency: "", mode:"", payAddress: "", payAmount: "", expireTime: "", successPageURL:"", failurePageURL: ""}}
+    const initialStage: SocketMessage = {messageType: "loading", body: {initialState: true, currency: "", mode:"", payAddress: "", payAmount: "", actuallyPaid: "", expireTime: "", successPageURL:"", failurePageURL: ""}}
     const [formValues, setFormValues] = useState({currency: ''})
     const [wsInstance, setWsInstance] = useState(null as unknown as WebSocket | null);
     const [stage, setStage] = useState(initialStage);
@@ -345,6 +393,10 @@ const Payment: NextPage = () =>  {
             )
                 break
             case "partially_paid":
+                body = (
+                    <PartiallyPaid payAmount={payAmount} stage={stage} factor={factor_big} />
+                )
+                break
             case "waiting":
                 body = (
                     <Waiting payAmount={payAmount} stage={stage} />
