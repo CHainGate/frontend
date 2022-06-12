@@ -11,7 +11,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export default function CopySnackbar({isOpen, setIsOpen} : {isOpen: boolean, setIsOpen: any}) {
+export default function CopySnackbar({isOpen, setIsOpen, content} : {isOpen: boolean, setIsOpen: any, content: string}) {
 
   return (
     <>
@@ -22,7 +22,7 @@ export default function CopySnackbar({isOpen, setIsOpen} : {isOpen: boolean, set
         autoHideDuration={1500}
       >
         <Alert onClose={() => setIsOpen(false)} severity="success" sx={{ width: '100%' }}>
-          Copied successfully.
+          {content}
         </Alert>
       </Snackbar>
     </>

@@ -18,18 +18,23 @@ import CopySnackbar from './CopySnackbar';
 
 export default function ApiKey() {
   const [showApiKey, setShowApiKey] = React.useState<boolean>(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = React.useState<boolean>(false);
+  const [snackbarContent, setSnackbarContent] = React.useState<string>("");
   const mode = useAppSelector((state) => state.internal.mode.mode);
   const { data, isLoading: getApiKeyLoading, isError } = useGetApiKeyQuery({ mode });
 
   // create API Key
-  const [generateApiKey, { isLoading: generateApiKeyLoading, error }] = useGenerateApiKeyMutation()
+  const [generateApiKey, { error }] = useGenerateApiKeyMutation()
   const createApiKey = () => {
     const arg: GenerateApiKeyApiArg = {
       apiKeyRequestDto: {
         mode
       }
-    }
-    generateApiKey(arg)
+    };
+    generateApiKey(arg);
+    setShowApiKey(true);
+    setSnackbarContent("API Key successfully generated.");
+    setIsSnackbarOpen(true);
   }
 
   // delete API Key
@@ -38,16 +43,19 @@ export default function ApiKey() {
     const args: DeleteApiKeyApiArg = {
       id: id
     };
-    deleteApiKey(args)
-  }
+    deleteApiKey(args);
+  };
 
   const handleClickToClipboard = (address: string | undefined) => {
     if (address) {
-      navigator.clipboard.writeText(address).then(() => setIsSnackbarOpen(true));
+      navigator.clipboard.writeText(address).then(() => {
+        setSnackbarContent("Successfully copied.");
+        setIsSnackbarOpen(true);
+      });
     }
   };
 
-  const [isSnackbarOpen, setIsSnackbarOpen] = React.useState<boolean>(false);
+
 
     return (
     <>
@@ -91,7 +99,7 @@ export default function ApiKey() {
           </Button>
         }
       </div>
-      <CopySnackbar isOpen={isSnackbarOpen} setIsOpen={setIsSnackbarOpen}></CopySnackbar>
+      <CopySnackbar isOpen={isSnackbarOpen} setIsOpen={setIsSnackbarOpen} content={snackbarContent}></CopySnackbar>
     </>
   )
 }
