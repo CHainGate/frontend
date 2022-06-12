@@ -75,7 +75,7 @@ const Register: NextPage = () => {
             alignItems="center"
           >
 
-            <Box className="login-form-logo-container">
+            <Box className="login-form-logo-container" marginTop={2}>
               <Image height={142} width={230} src={logo} alt="Logo exRap" className="logo" />
             </Box>
             <Box my={2}>

@@ -135,9 +135,9 @@ export default function Sidebar() {
 
     const drawer = (
         <div>
-            <div className="logo-container">
-                <Image height={142} width={230} src={logo} alt="Logo CHainGate" className="logo" />
-            </div>
+            <Box className="logo-container" display={'flex'} justifyContent={'center'} my={2}>
+                <Image height={114} width={198} src={logo} alt="Logo CHainGate" className="logo" />
+            </Box>
             <Divider />
             <List className={classes.userItem} style={{color: 'white'}}>
                 <ListItem>
