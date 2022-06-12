@@ -57,6 +57,11 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
         boxSizing: 'border-box',
         width: drawerWidth,
     },
+    drawerPapertestMode: {
+        boxSizing: 'border-box',
+        width: drawerWidth,
+        backgroundColor: 'lightcyan',
+    },
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
@@ -91,6 +96,7 @@ export default function Sidebar() {
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const currentUser: AuthInfo = useAppSelector((state) => state.internal.authInfo);
+    const mode = useAppSelector((state) => state.internal.mode.mode);
 
     const handleSignout = () => {
         dispatch(clearUser());
@@ -129,9 +135,9 @@ export default function Sidebar() {
 
     const drawer = (
         <div>
-            <div className="logo-container">
-                <Image height={142} width={230} src={logo} alt="Logo CHainGate" className="logo" />
-            </div>
+            <Box className="logo-container" display={'flex'} justifyContent={'center'} my={2}>
+                <Image height={114} width={198} src={logo} alt="Logo CHainGate" className="logo" />
+            </Box>
             <Divider />
             <List className={classes.userItem} style={{color: 'white'}}>
                 <ListItem>
@@ -210,7 +216,7 @@ export default function Sidebar() {
                 <Hidden smDown implementation="css">
                     <Drawer
                         classes={{
-                            paper: classes.drawerPaper,
+                            paper: mode == "main" ? classes.drawerPaper : classes.drawerPapertestMode,
                         }}
                         variant="permanent"
                         open

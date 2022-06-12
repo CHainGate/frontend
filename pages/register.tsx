@@ -9,16 +9,18 @@ import { useState } from 'react';
 import { RegisterMerchantApiArg, RegisterRequestDto, useRegisterMerchantMutation } from '../api/chaingate.generated';
 import Link from "next/link";
 import Head from "next/head";
-
+import router from 'next/router';
+import CopySnackbar from '../src/CopySnackbar';
 
 const Register: NextPage = () => {
+  const [isSnackbarOpen, setIsSnackbarOpen] = React.useState<boolean>(false);
   const [formState, setFormState] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
   });
-  const [register, {isLoading, error}] = useRegisterMerchantMutation();
+  const [register, {error}] = useRegisterMerchantMutation();
 
   const handleChange = ({
     target: { name, value },
@@ -30,20 +32,22 @@ const Register: NextPage = () => {
   const handleRegister = async (event: any) => {
     event.preventDefault();
 
-    try {
-      const  registerArg: RegisterMerchantApiArg = {
-        registerRequestDto: {
-          firstName: formState.firstName,
-          lastName: formState.lastName,
-          email: formState.email,
-          password: formState.password
-        }
+    const  registerArg: RegisterMerchantApiArg = {
+      registerRequestDto: {
+        firstName: formState.firstName,
+        lastName: formState.lastName,
+        email: formState.email,
+        password: formState.password
       }
-      await register(registerArg).unwrap()
-    } catch {
-
     }
+    await register(registerArg).unwrap()
 
+    if (!error) {
+      setIsSnackbarOpen(true);
+      setTimeout(() => {
+        router.push('/login');
+      }, 1500);
+    }
   }
 
   let content = (
@@ -57,38 +61,41 @@ const Register: NextPage = () => {
   );
 
   return (
-    <Container maxWidth="sm">
-      <Head>
-        <title>Register</title>
-        <meta property="og:title" content="Register" key="title" />
-      </Head>
-      <form onSubmit={handleRegister} className="register-form">
-        <Grid
-          container
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-        >
+    <>
+      <Container maxWidth="sm">
+        <Head>
+          <title>Register</title>
+          <meta property="og:title" content="Register" key="title" />
+        </Head>
+        <form onSubmit={handleRegister} className="register-form">
+          <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+          >
 
-          <Box className="login-form-logo-container">
-            <Image height={142} width={230} src={logo} alt="Logo exRap" className="logo" />
-          </Box>
-          <Box my={2}>
-            {content}
-          </Box>
-          <Box my={2} width="100%">
-            <Button type="submit" color="primary" variant="contained" fullWidth sx={{marginBottom: 1}}>
-              Register
-            </Button>
-            <Link href='/login' passHref>
-              <Button type="submit" color="primary" variant="contained" fullWidth>
-                Go To Login
+            <Box className="login-form-logo-container" marginTop={2}>
+              <Image height={142} width={230} src={logo} alt="Logo exRap" className="logo" />
+            </Box>
+            <Box my={2}>
+              {content}
+            </Box>
+            <Box my={2} width="100%">
+              <Button type="submit" color="primary" variant="contained" fullWidth sx={{marginBottom: 1}}>
+                Register
               </Button>
-            </Link>
-          </Box>
-        </Grid>
-      </form>
-    </Container>
+              <Link href='/login' passHref>
+                <Button type="submit" color="primary" variant="contained" fullWidth>
+                  Go To Login
+                </Button>
+              </Link>
+            </Box>
+          </Grid>
+        </form>
+      </Container>
+      <CopySnackbar isOpen={isSnackbarOpen} setIsOpen={setIsSnackbarOpen} content={"Successfully registered."}></CopySnackbar>
+    </>
   )
 }
 
