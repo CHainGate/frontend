@@ -195,7 +195,7 @@ function PartiallyPaid(props: { payAmount: BigNumber, stage: SocketMessage, fact
         <Grid item>
             <a style={{textDecoration: 'underline'}} target='_blank' href={getBlockExplorerURL(props.stage.body.payAddress, props.stage.body.currency, props.stage.body.mode)} rel="noreferrer">(Check Block Explorer)</a>
         </Grid>
-        <CopySnackbar isOpen={isSnackbarOpen} setIsOpen={setIsSnackbarOpen}></CopySnackbar>
+        <CopySnackbar isOpen={isSnackbarOpen} setIsOpen={setIsSnackbarOpen} content={"Successfully copied."}></CopySnackbar>
     </Grid>;
 }
 
