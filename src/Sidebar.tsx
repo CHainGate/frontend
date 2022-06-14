@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     drawerPapertestMode: {
         boxSizing: 'border-box',
         width: drawerWidth,
-        backgroundColor: 'lightcyan',
+        backgroundColor: '#ff933640',
     },
     content: {
         flexGrow: 1,
